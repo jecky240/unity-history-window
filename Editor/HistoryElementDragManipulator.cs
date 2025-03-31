@@ -68,7 +68,7 @@ namespace Gemserk
             if (evt.button == 1)
             {
                 // Just ping the object
-                SelectionHistoryWindowUtils.PingEntry(entry);
+                // SelectionHistoryWindowUtils.PingEntry(entry);
             } 
         }
         
