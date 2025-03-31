@@ -56,7 +56,7 @@ namespace Gemserk
             
             if (evt.button == 1)
             {
-                EditorGUIUtility.PingObject(assetReference);
+                // EditorGUIUtility.PingObject(assetReference);
             } 
         }
         
