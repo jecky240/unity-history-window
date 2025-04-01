@@ -14,6 +14,7 @@
         <engine:Image class="hidden" name="OpenPrefabIcon" />
         <engine:Image name="Favorite" />
         <engine:Image name="PingIcon" />
+        <engine:Image name="RemoveIcon" />
     </engine:VisualElement>
     
     

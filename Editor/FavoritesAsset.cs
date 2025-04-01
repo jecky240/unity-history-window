@@ -39,5 +39,12 @@ namespace Gemserk
             OnFavoritesUpdated?.Invoke(this);
             Save(true);
         }
+
+        public void RemoveAll()
+        {
+            favoritesList.clear();
+            OnFavoritesUpdated?.Invoke(this);
+            Save(true);
+        }
     }
 }

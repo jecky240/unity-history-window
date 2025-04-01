@@ -56,7 +56,7 @@ namespace Gemserk
             
             if (evt.button == 1)
             {
-                EditorGUIUtility.PingObject(assetReference);
+                // EditorGUIUtility.PingObject(assetReference);
             } 
         }
         
@@ -71,6 +71,10 @@ namespace Gemserk
                 return;
             }
             
+            if (evt.button == 0 && evt.clickCount == 1)
+            {
+                EditorGUIUtility.PingObject(assetReference);
+            }
             if (evt.button == 0 && evt.clickCount == 2)
             {
                 AssetDatabase.OpenAsset(assetReference);

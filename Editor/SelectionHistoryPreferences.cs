@@ -41,11 +41,11 @@ namespace Gemserk {
                     if (selectionHistory != null)
                     {
                         selectionHistory.historySize =
-                            EditorGUILayout.IntField("历史记录数量", selectionHistory.historySize);
+                            EditorGUILayout.IntField("历史记录数量(0为无限制)", selectionHistory.historySize);
                     }
                     
-                    autoremoveDestroyed = EditorGUILayout.Toggle("已销毁条目自动删除", autoremoveDestroyed);
-                    autoremoveUnloaded = EditorGUILayout.Toggle("已卸载条目自动删除", autoremoveUnloaded);
+                    autoremoveDestroyed = EditorGUILayout.Toggle("自动移除已销毁的元素", autoremoveDestroyed);
+                    autoremoveUnloaded = EditorGUILayout.Toggle("自动移除已卸载的元素", autoremoveUnloaded);
                     autoRemoveDuplicated = EditorGUILayout.Toggle("允许重复条目", autoRemoveDuplicated);
                     drawFavorites = EditorGUILayout.Toggle("显示收藏夹按钮", drawFavorites);
                     orderLastSelectedFirst = EditorGUILayout.Toggle("倒序选择条目", orderLastSelectedFirst);

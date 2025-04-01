@@ -36,6 +36,14 @@
 .favorite #OpenPrefabIcon {
     max-width: 16px;
     max-height: 16px;
+    right: 56px;
+    position: absolute;
+    /* align-self: flex-end; */
+}
+
+.favorite #PingIcon {
+    max-width: 16px;
+    max-height: 16px;
     right: 30px;
     position: absolute;
     /* align-self: flex-end; */
@@ -79,7 +87,7 @@
 .history #PingIcon {
     max-width: 16px;
     max-height: 16px;
-    right: 0px;
+    right: 30px;
     position: absolute;
     /* align-self: flex-end; */
 }
@@ -87,7 +95,7 @@
 .history #Favorite {
     max-width: 16px;
     max-height: 16px;
-    right: 25px;
+    right: 56px;
     position: absolute;
     /* align-self: flex-end; */
 }
@@ -95,7 +103,15 @@
 .history #OpenPrefabIcon {
     max-width: 16px;
     max-height: 16px;
-    right: 50px;
+    right: 82px;
+    position: absolute;
+    /* align-self: flex-end; */
+}
+
+.history #RemoveIcon {
+    max-width: 16px;
+    max-height: 16px;
+    right: 4px;
     position: absolute;
     /* align-self: flex-end; */
 }

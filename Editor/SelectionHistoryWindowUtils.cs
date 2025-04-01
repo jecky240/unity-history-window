@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEditor.ShortcutManagement;
+using UnityEditor.Callbacks;
 using UnityEngine;
 
 namespace Gemserk
@@ -38,6 +39,21 @@ namespace Gemserk
 		    RecordSelectionChange();
 	    }
 
+		[OnOpenAsset]
+		public static bool OnOpenAssetCallback(int instanceID, int line)
+		{
+			// string name = EditorUtility.InstanceIDToObject(instanceID).name;
+			if (Selection.activeObject != null)
+			{
+				string assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
+				if (assetPath.EndsWith(".prefab") || assetPath.EndsWith(".png"))
+				{
+					RecordSelectionChange();
+				}
+			}
+			return false;
+		}
+
 	    public static void RecordSelectionChange()
 	    {
 		    if (Selection.activeObject != null)
@@ -67,7 +83,7 @@ namespace Gemserk
 		    }
 	    }
 
-	    [MenuItem("Window/Gemserk/Previous selection %#,")]
+	    [MenuItem("Window/Selection History/[1] 上一项 %#,")]
 	    [Shortcut("Selection History/Previous Selection")]
 	    public static void PreviousSelection()
 	    {
@@ -76,7 +92,7 @@ namespace Gemserk
 		    Selection.activeObject = selectionHistory.GetSelection ();
 	    }
 
-	    [MenuItem("Window/Gemserk/Next selection %#.")]
+	    [MenuItem("Window/Selection History/[2] 下一项 %#.")]
 	    [Shortcut("Selection History/Next Selection")]
 	    public static void NextSelection()
 	    {
@@ -95,7 +111,7 @@ namespace Gemserk
 			EditorPrefs.GetBool(HistoryAllowDuplicatedEntriesPrefKey, false);
 
 		public static bool ShowHierarchyViewObjects =>
-			EditorPrefs.GetBool(HistoryShowHierarchyObjectsPrefKey, true);
+			EditorPrefs.GetBool(HistoryShowHierarchyObjectsPrefKey, false);
 		
 		public static bool ShowUnloadedObjects =>
 			EditorPrefs.GetBool(ShowUnloadedObjectsKey, true);
