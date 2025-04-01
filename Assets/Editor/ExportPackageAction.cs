@@ -6,7 +6,7 @@ namespace Gemserk.Tools
 {
     public static class ExportPackageAction
     {
-        [MenuItem("Assets/Gemserk/Export Package")]
+        [MenuItem("Window/Selection History/[6] 导出包")]
         public static void ExportPackage()
         {
             try

@@ -85,6 +85,10 @@ namespace Gemserk
             
             var entry = selectionHistory.GetEntry(historyIndex);    
             
+            if (evt.button == 0 && evt.clickCount == 1)
+            {
+                SelectionHistoryWindowUtils.PingEntry(entry);
+            }
             if (evt.button == 0 && evt.clickCount == 2)
             {
                 // Try to open the asset.

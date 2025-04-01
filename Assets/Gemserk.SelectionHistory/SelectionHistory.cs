@@ -223,7 +223,7 @@ namespace Gemserk
                 currentSelectionIndex = _history.Count - 1;
             }
 
-            if (_history.Count > historySize)
+            if (_history.Count > historySize && historySize > 0)
             {
                 _history.RemoveRange(0, _history.Count - historySize);
                 //			_history.RemoveAt(0);
@@ -233,6 +233,11 @@ namespace Gemserk
             {
                 OnNewEntryAdded?.Invoke(this);
             }
+        }
+
+        public void Remove(Entry obj)
+        {
+            _history.Remove(obj);
         }
 
         public void Previous()

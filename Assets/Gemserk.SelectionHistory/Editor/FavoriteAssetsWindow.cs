@@ -9,17 +9,17 @@ namespace Gemserk
 {
     public class FavoriteAssetsWindow : EditorWindow
     {
-        [MenuItem("Window/Gemserk/Favorites")]
+        [MenuItem("Window/Selection History/[4] 打开收藏夹")]
         public static void OpenWindow()
         {
             var window = GetWindow<FavoriteAssetsWindow>();
             var titleContent = EditorGUIUtility.IconContent(UnityBuiltInIcons.favoriteWindowIconName);
-            titleContent.text = "Favorites";
-            titleContent.tooltip = "Favorite assets window";
+            titleContent.text = "收藏夹";
+            titleContent.tooltip = "收藏夹窗口";
             window.titleContent = titleContent;
         }
 
-        [MenuItem("Assets/Favorite Item")]
+        [MenuItem("Window/Selection History/[5] 加入收藏夹")]
         [Shortcut("Gemserk/Favorite Item", null, KeyCode.F, ShortcutModifiers.Shift | ShortcutModifiers.Alt)]
         public static void Favorite()
         { 
@@ -146,6 +146,11 @@ namespace Gemserk
             {
                 favoritesParent = new ScrollView(ScrollViewMode.Vertical);
                 root.Add(favoritesParent);
+                var clearButton = new Button(delegate
+                {
+                    FavoritesAsset.instance.RemoveAll();
+                }) {text = "清空收藏夹"};
+                root.Add(clearButton);
             }
             else
             {
@@ -208,12 +213,23 @@ namespace Gemserk
                     icon.image = AssetPreview.GetMiniThumbnail(assetReference);
                 }
                 
+                var pingIcon = elementTree.Q<Image>("PingIcon");
+                if (pingIcon != null)
+                {
+                    pingIcon.image = EditorGUIUtility.IconContent(UnityBuiltInIcons.searchIconName).image;
+                    pingIcon.tooltip = "定位";
+                    pingIcon.RegisterCallback(delegate(MouseUpEvent e)
+                    {
+                        EditorGUIUtility.PingObject(assetReference);
+                    });
+                }
+
                 var removeIcon = elementTree.Q<Image>("RemoveIcon");
                 if (removeIcon != null)
                 {
                     // removeIcon.image = AssetPreview.GetMiniThumbnail(assetReference);
                     removeIcon.image = EditorGUIUtility.IconContent(UnityBuiltInIcons.removeIconName).image;
-                    removeIcon.tooltip = "Remove";
+                    removeIcon.tooltip = "移除";
                     
                     removeIcon.RegisterCallback(delegate(MouseUpEvent e)
                     {
@@ -226,7 +242,7 @@ namespace Gemserk
                 {
                     // removeIcon.image = AssetPreview.GetMiniThumbnail(assetReference);
                     openPrefabIcon.image = EditorGUIUtility.IconContent(UnityBuiltInIcons.openAssetIconName).image;
-                    openPrefabIcon.tooltip = "Open";
+                    openPrefabIcon.tooltip = "打开";
 
                     openPrefabIcon.RemoveFromClassList("hidden");
 

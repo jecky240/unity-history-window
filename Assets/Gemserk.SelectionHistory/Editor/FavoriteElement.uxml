@@ -13,6 +13,7 @@
         </engine:VisualElement>
         <engine:Image class="hidden" name="OpenPrefabIcon" />
         <engine:Image name="RemoveIcon" />
+        <engine:Image name="PingIcon" />
     </engine:VisualElement>
     
     

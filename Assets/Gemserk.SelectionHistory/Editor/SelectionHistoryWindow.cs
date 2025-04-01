@@ -34,13 +34,13 @@ namespace Gemserk
     
     public class SelectionHistoryWindow : EditorWindow, IHasCustomMenu
     {
-        [MenuItem("Window/Gemserk/Selection History %#h")]
+        [MenuItem("Window/Selection History/[3] 打开历史记录 %#h")]
         public static void OpenWindow()
         {
             var window = GetWindow<SelectionHistoryWindow>();
-            var titleContent = EditorGUIUtility.IconContent("Refresh");
-            titleContent.text = "History";
-            titleContent.tooltip = "Objects selection history";
+            var titleContent = EditorGUIUtility.IconContent(UnityBuiltInIcons.tagIconName);
+            titleContent.text = "历史记录";
+            titleContent.tooltip = "历史记录窗口";
             window.titleContent = titleContent;
         }
         
@@ -139,7 +139,7 @@ namespace Gemserk
             {
                 selectionHistory.Clear();
                 ReloadRoot();
-            }) {text = "Clear"};
+            }) {text = "清空历史记录"};
             
             root.Add(clearButton);
             
@@ -183,7 +183,10 @@ namespace Gemserk
 
         private void CreateMaxElements(SelectionHistory selectionHistory, VisualElement parent)
         {
-            var size = selectionHistory.historySize;
+            var size = selectionHistory.GetHistoryCount();
+            if(size == 0){
+                size = 1;
+            }
 
             for (int i = 0; i < size; i++)
             {
@@ -211,7 +214,7 @@ namespace Gemserk
             if (pingIcon != null)
             {
                 pingIcon.image = EditorGUIUtility.IconContent(UnityBuiltInIcons.searchIconName).image;
-                pingIcon.tooltip = "Locate";
+                pingIcon.tooltip = "定位";
                 pingIcon.RegisterCallback(delegate(MouseUpEvent e)
                 {
                     var entry = selectionHistory.GetEntry(historyIndex);
@@ -227,7 +230,7 @@ namespace Gemserk
             if (openPrefabIcon != null)
             {
                 openPrefabIcon.image = EditorGUIUtility.IconContent(UnityBuiltInIcons.openAssetIconName).image;
-                openPrefabIcon.tooltip = "Open";
+                openPrefabIcon.tooltip = "打开";
                 openPrefabIcon.RegisterCallback(delegate(MouseUpEvent e)
                 {
                     var entry = selectionHistory.GetEntry(historyIndex);
@@ -253,26 +256,39 @@ namespace Gemserk
             var favoriteAsset = selectionElementRoot.Q<Image>("Favorite");
             if (favoriteAsset != null)
             {
-                favoriteAsset.tooltip = "Toggle Favorite";
-                
+                favoriteAsset.tooltip = "收藏";
                 favoriteAsset.RegisterCallback(delegate(MouseUpEvent e)
                 {
                     var entry = selectionHistory.GetEntry(historyIndex);
-
                     if (entry == null)
                         return;
                         
                     if (FavoritesAsset.instance.IsFavorite(entry.Reference))
                     {
                         FavoritesAsset.instance.RemoveFavorite(entry.Reference);
-                    } else
-                    {
+                    } else {
                         FavoritesAsset.instance.AddFavorite(new FavoritesAsset.Favorite
                         {
                             reference = entry.Reference
                         });
                     }
                             
+                    ReloadRootAndRemoveUnloadedAndDuplicated();
+                });
+            }
+
+            var removeIcon = selectionElementRoot.Q<Image>("RemoveIcon");
+            if (removeIcon != null)
+            {
+                removeIcon.image = EditorGUIUtility.IconContent(UnityBuiltInIcons.clearSearchToolbarIconName).image;
+                removeIcon.tooltip = "关闭";
+                
+                removeIcon.RegisterCallback(delegate(MouseUpEvent e)
+                {
+                    var entry = selectionHistory.GetEntry(historyIndex);
+                    if (entry == null)
+                        return;
+                    selectionHistory.Remove(entry);
                     ReloadRootAndRemoveUnloadedAndDuplicated();
                 });
             }
@@ -287,7 +303,14 @@ namespace Gemserk
                 return;
             }
 
-            SelectionHistoryWindowUtils.RecordSelectionChange();
+            if (Selection.activeObject != null)
+			{
+				string assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
+				if (assetPath.EndsWith(".png"))
+				{
+					SelectionHistoryWindowUtils.RecordSelectionChange();
+				}
+			}
         }
 
         private void OnHistoryEntryAdded(SelectionHistory selectionHistory)
@@ -323,7 +346,7 @@ namespace Gemserk
             }
             
             var showHierarchyViewObjects =
-                EditorPrefs.GetBool(SelectionHistoryWindowUtils.HistoryShowHierarchyObjectsPrefKey, true);
+                EditorPrefs.GetBool(SelectionHistoryWindowUtils.HistoryShowHierarchyObjectsPrefKey, false);
             
             var showUnloadedObjects = showHierarchyViewObjects && SelectionHistoryWindowUtils.ShowUnloadedObjects 
                                                                && !SelectionHistoryWindowUtils.AutomaticRemoveUnloaded;
@@ -505,27 +528,27 @@ namespace Gemserk
         public void AddItemsToMenu(GenericMenu menu)
         {
             var showHierarchyViewObjects =
-                EditorPrefs.GetBool(SelectionHistoryWindowUtils.HistoryShowHierarchyObjectsPrefKey, true);
+                EditorPrefs.GetBool(SelectionHistoryWindowUtils.HistoryShowHierarchyObjectsPrefKey, false);
             
-            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowHierarchyObjectsPrefKey, "HierarchyView Objects", 
-                "Toggle to show/hide objects from scene hierarchy view.");
+            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowHierarchyObjectsPrefKey, "视图界面元素", 
+                "Toggle to show/hide objects from scene hierarchy view.", false);
 		 
             if (showHierarchyViewObjects && !SelectionHistoryWindowUtils.AutomaticRemoveUnloaded)
             {
-                AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.ShowUnloadedObjectsKey, "Unloaded Objects", 
-                    "Toggle to show/hide unloaded objects from scenes hierarchy view.");
+                AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.ShowUnloadedObjectsKey, "已卸载元素", 
+                    "Toggle to show/hide unloaded objects from scenes hierarchy view.", true);
             } 
 		    
             if (!SelectionHistoryWindowUtils.AutomaticRemoveDestroyed)
             {
-                AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.ShowDestroyedObjectsKey, "Destroyed Objects",
-                    "Toggle to show/hide unreferenced or destroyed objects.");
+                AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.ShowDestroyedObjectsKey, "已销毁元素",
+                    "Toggle to show/hide unreferenced or destroyed objects.", true);
             }
             
-            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowPinButtonPrefKey, "Favorite Button", 
-                "Toggle to show/hide favorite Reference button.");
+            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowPinButtonPrefKey, "收藏按钮", 
+                "Toggle to show/hide favorite Reference button.", true);
             
-            menu.AddItem(new GUIContent("Open preferences"), false, delegate
+            menu.AddItem(new GUIContent("打开首选项"), false, delegate
             {
                 SettingsService.OpenUserPreferences("Selection History");
             });
@@ -536,11 +559,10 @@ namespace Gemserk
             // });
         }
 
-        private void AddMenuItemForPreference(GenericMenu menu, string preference, string text, string tooltip)
+        private void AddMenuItemForPreference(GenericMenu menu, string preference, string text, string tooltip, bool defaultValue)
         {
-            const bool defaultValue = true;
             var value = EditorPrefs.GetBool(preference, defaultValue);
-            var name = value ? $"Hide {text}" : $"Show {text}";
+            var name = value ? $"隐藏{text}" : $"显示{text}";
             menu.AddItem(new GUIContent(name, tooltip), false, delegate
             {
                 ToggleBoolEditorPref(preference, defaultValue);
