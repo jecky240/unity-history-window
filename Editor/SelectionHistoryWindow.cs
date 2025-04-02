@@ -340,10 +340,10 @@ namespace Gemserk
 
         private void ReloadRoot()
         {
-            if (visualElements.Count != selectionHistory.historySize)
-            {
+            //if (visualElements.Count != selectionHistory.historySize)
+            //{
                 RegenerateUI();
-            }
+            //}
             
             var showHierarchyViewObjects =
                 EditorPrefs.GetBool(SelectionHistoryWindowUtils.HistoryShowHierarchyObjectsPrefKey, false);
