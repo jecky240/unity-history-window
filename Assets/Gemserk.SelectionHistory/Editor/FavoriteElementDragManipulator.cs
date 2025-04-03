@@ -52,6 +52,8 @@ namespace Gemserk
             if (evt.button == 0)
             {
                 Selection.activeObject = assetReference;
+                EditorGUIUtility.PingObject(assetReference);
+                AssetDatabase.OpenAsset(assetReference);
             }
             
             if (evt.button == 1)
@@ -73,11 +75,11 @@ namespace Gemserk
             
             if (evt.button == 0 && evt.clickCount == 1)
             {
-                EditorGUIUtility.PingObject(assetReference);
+                // EditorGUIUtility.PingObject(assetReference);
             }
             if (evt.button == 0 && evt.clickCount == 2)
             {
-                AssetDatabase.OpenAsset(assetReference);
+                // AssetDatabase.OpenAsset(assetReference);
             }
         }
 

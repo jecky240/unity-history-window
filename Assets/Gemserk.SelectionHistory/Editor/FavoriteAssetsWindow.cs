@@ -197,6 +197,14 @@ namespace Gemserk
                 var elementTree = favoriteElementTreeAsset.CloneTree();
                 var favoriteRoot = elementTree.Q<VisualElement>("Root");
                 
+                var selectionHistory = SelectionHistoryAsset.instance.selectionHistory;
+                if(selectionHistory != null){
+                    var selectReference = selectionHistory.GetSelection();
+                    if(assetReference == selectReference){
+                        favoriteRoot.style.backgroundColor = new Color(0.22f, 0.24f, 0.29f, 1f);
+                    }
+                }
+
                 var dragArea = elementTree.Q<VisualElement>("DragArea");
                 
                 var isSceneAsset = assetReference is SceneAsset;
