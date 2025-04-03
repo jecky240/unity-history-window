@@ -51,9 +51,18 @@ namespace Gemserk
             
             if (evt.button == 0)
             {
+                var selectionHistory = SelectionHistoryAsset.instance.selectionHistory;
+                if(selectionHistory != null)
+                {
+                    selectionHistory.SetSelection(assetReference);
+                }
                 Selection.activeObject = assetReference;
                 EditorGUIUtility.PingObject(assetReference);
-                AssetDatabase.OpenAsset(assetReference);
+                string assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
+				if (assetPath.EndsWith(".prefab"))
+				{
+                    AssetDatabase.OpenAsset(assetReference);
+				}
             }
             
             if (evt.button == 1)

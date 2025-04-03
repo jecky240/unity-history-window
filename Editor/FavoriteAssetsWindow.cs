@@ -230,6 +230,14 @@ namespace Gemserk
                     {
                         EditorGUIUtility.PingObject(assetReference);
                     });
+                    if (!SelectionHistoryWindowUtils.ShowPingButton)
+                    {
+                        pingIcon.style.display = DisplayStyle.None;
+                    }
+                    else
+                    {
+                        pingIcon.style.display = DisplayStyle.Flex;
+                    }
                 }
 
                 var removeIcon = elementTree.Q<Image>("RemoveIcon");
@@ -258,6 +266,14 @@ namespace Gemserk
                     {
                         AssetDatabase.OpenAsset(assetReference);
                     });
+                    if (!SelectionHistoryWindowUtils.ShowOpenButton)
+                    {
+                        openPrefabIcon.style.display = DisplayStyle.None;
+                    }
+                    else
+                    {
+                        openPrefabIcon.style.display = DisplayStyle.Flex;
+                    }
                 }
                 
                 var label = elementTree.Q<Label>("Favorite");
