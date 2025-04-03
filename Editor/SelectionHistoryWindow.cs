@@ -156,7 +156,7 @@ namespace Gemserk
                 selectionHistory.RemoveEntries(SelectionHistory.Entry.State.ReferenceUnloaded);
                 // ReloadRootAndRemoveUnloadedAndDuplicated();
                 ReloadRoot();
-            }) {text = "Remove Unloaded"};
+            }) {text = "清空已卸载元素"};
             root.Add(removeUnloadedButton);
             
             removeDestroyedButton = new Button(delegate
@@ -164,7 +164,7 @@ namespace Gemserk
                 selectionHistory.RemoveEntries(SelectionHistory.Entry.State.ReferenceDestroyed);
                 // ReloadRootAndRemoveUnloadedAndDuplicated();
                 ReloadRoot();
-            }) {text = "Remove destroyed"};
+            }) {text = "清空已删除元素"};
             root.Add(removeDestroyedButton);
         }
         
@@ -199,6 +199,9 @@ namespace Gemserk
 
         private VisualElement CreateHistoryVisualElement(int index)
         {
+            if(historyElementViewTree == null){
+                GetDefaultElements();
+            }
             var elementTree = historyElementViewTree.CloneTree();
             var selectionElementRoot = elementTree.Q<VisualElement>("Root");
             
@@ -272,8 +275,6 @@ namespace Gemserk
                             reference = entry.Reference
                         });
                     }
-                            
-                    ReloadRootAndRemoveUnloadedAndDuplicated();
                 });
             }
 
@@ -310,6 +311,7 @@ namespace Gemserk
 				{
 					SelectionHistoryWindowUtils.RecordSelectionChange();
 				}
+                FavoritesAsset.instance.InvokeUpdate();
 			}
         }
 
@@ -385,8 +387,13 @@ namespace Gemserk
                 }
                 else
                 {
+                    var selectReference = selectionHistory.GetSelection();
+                    if(entry.Reference == selectReference){
+                        visualElement.style.backgroundColor = new Color(0.22f, 0.24f, 0.29f, 1f);
+                    }
+
                     var testName = entry.GetName(false).ToLower();
-                    
+
                     if (searchTexts != null && searchTexts.Length > 0)
                     {
                         var match = true;
@@ -495,6 +502,19 @@ namespace Gemserk
                         else
                         {
                             pingIcon.style.display = DisplayStyle.Flex;
+                        }
+                    }
+
+                    var removeIcon = visualElement.Q<Image>("RemoveIcon");
+                    if (removeIcon != null)
+                    {
+                        if (!entry.isReferenced)
+                        {
+                            removeIcon.style.display = DisplayStyle.None;
+                        }
+                        else
+                        {
+                            removeIcon.style.display = DisplayStyle.Flex;
                         }
                     }
                 }

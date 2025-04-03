@@ -63,6 +63,8 @@ namespace Gemserk
                 // Just select the object
                 selectionHistory.SetSelection(entry.Reference);
                 Selection.activeObject = entry.Reference;
+                SelectionHistoryWindowUtils.PingEntry(entry);
+                AssetDatabase.OpenAsset(entry.Reference);
             }
             
             if (evt.button == 1)
@@ -87,7 +89,7 @@ namespace Gemserk
             
             if (evt.button == 0 && evt.clickCount == 1)
             {
-                SelectionHistoryWindowUtils.PingEntry(entry);
+                // SelectionHistoryWindowUtils.PingEntry(entry);
             }
             if (evt.button == 0 && evt.clickCount == 2)
             {
@@ -95,7 +97,7 @@ namespace Gemserk
                 
                 if (entry.isAsset || entry.IsSceneAsset())
                 {
-                    AssetDatabase.OpenAsset(entry.Reference);
+                    // AssetDatabase.OpenAsset(entry.Reference);
                 }
 
                 if (entry.isUnloadedHierarchyObject)

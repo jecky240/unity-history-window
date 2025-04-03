@@ -87,7 +87,7 @@
 .history #PingIcon {
     max-width: 16px;
     max-height: 16px;
-    right: 30px;
+    right: 56px;
     position: absolute;
     /* align-self: flex-end; */
 }
@@ -95,7 +95,7 @@
 .history #Favorite {
     max-width: 16px;
     max-height: 16px;
-    right: 56px;
+    right: 30px;
     position: absolute;
     /* align-self: flex-end; */
 }
