@@ -14,7 +14,13 @@ namespace Gemserk
 		public static readonly string HistoryAllowDuplicatedEntriesPrefKey = "Gemserk.SelectionHistory.AllowDuplicatedEntries";
 	    public static readonly string HistoryShowHierarchyObjectsPrefKey = "Gemserk.SelectionHistory.ShowHierarchyObjects";
 
-	    public static readonly string HistoryShowPinButtonPrefKey = "Gemserk.SelectionHistory.ShowFavoritesPinButton";
+		public static readonly string HistoryShowOtherPrefKey = "Gemserk.SelectionHistory.ShowOtherHistory";
+
+	    public static readonly string HistoryShowFavoriteButtonPrefKey = "Gemserk.SelectionHistory.ShowFavoritesPinButton";
+
+		public static readonly string HistoryShowPingButtonPrefKey = "Gemserk.SelectionHistory.ShowPingButton";
+
+		public static readonly string HistoryShowOpenButtonPrefKey = "Gemserk.SelectionHistory.ShowOpenButton";
 
 	    public static readonly string ShowUnloadedObjectsKey = "Gemserk.SelectionHistory.ShowUnloadedObjects";
 	    public static readonly string ShowDestroyedObjectsKey = "Gemserk.SelectionHistory.ShowDestroyedObjects";
@@ -119,8 +125,17 @@ namespace Gemserk
 		public static bool ShowDestroyedObjects =>
 			EditorPrefs.GetBool(ShowDestroyedObjectsKey, false);
 		
+		public static bool ShowOtherHistory =>
+			EditorPrefs.GetBool(HistoryShowOtherPrefKey, true);
+
 		public static bool ShowFavoriteButton =>
-			EditorPrefs.GetBool(HistoryShowPinButtonPrefKey, false);
+			EditorPrefs.GetBool(HistoryShowFavoriteButtonPrefKey, true);
+
+		public static bool ShowPingButton =>
+			EditorPrefs.GetBool(HistoryShowPingButtonPrefKey, true);
+
+		public static bool ShowOpenButton =>
+			EditorPrefs.GetBool(HistoryShowOpenButtonPrefKey, false);
 		
 		public static bool OrderLastSelectedFirst =>
 			EditorPrefs.GetBool(OrderLastSelectedFirstKey, false);

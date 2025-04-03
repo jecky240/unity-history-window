@@ -306,8 +306,9 @@ namespace Gemserk
 
             if (Selection.activeObject != null)
 			{
-				string assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
-				if (assetPath.EndsWith(".png"))
+                var isSceneObject = SelectionHistoryUtils.IsSceneObject(Selection.activeObject) && SelectionHistoryWindowUtils.ShowHierarchyViewObjects;
+                string assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
+				if (isSceneObject || assetPath.EndsWith(".png"))
 				{
 					SelectionHistoryWindowUtils.RecordSelectionChange();
 				}
@@ -381,7 +382,17 @@ namespace Gemserk
                 var visualElement = visualElements[i];
                 var entry = selectionHistory.GetEntry(i);
                 
-                if (entry == null)
+                var isHideOther = false;
+                if(entry != null)
+                {
+                    string assetPath = AssetDatabase.GetAssetPath(entry.Reference);
+                    if (!assetPath.EndsWith(".prefab") && !SelectionHistoryWindowUtils.ShowOtherHistory)
+                    {
+                        isHideOther = true;
+                    }
+                }
+
+                if (entry == null || isHideOther)
                 {
                     visualElement.style.display = DisplayStyle.None;
                 }
@@ -474,6 +485,14 @@ namespace Gemserk
                         {
                             openPrefabIcon.AddToClassList("hidden");
                         }
+                        if (!SelectionHistoryWindowUtils.ShowOpenButton ||!entry.isReferenced)
+                        {
+                            openPrefabIcon.style.display = DisplayStyle.None;
+                        }
+                        else
+                        {
+                            openPrefabIcon.style.display = DisplayStyle.Flex;
+                        }
                     }
                     
                     var favoriteAsset = visualElement.Q<Image>("Favorite");
@@ -495,7 +514,7 @@ namespace Gemserk
                     var pingIcon = visualElement.Q<Image>("PingIcon");
                     if (pingIcon != null)
                     {
-                        if (!entry.isReferenced)
+                        if (!SelectionHistoryWindowUtils.ShowPingButton ||!entry.isReferenced)
                         {
                             pingIcon.style.display = DisplayStyle.None;
                         }
@@ -565,8 +584,17 @@ namespace Gemserk
                     "Toggle to show/hide unreferenced or destroyed objects.", true);
             }
             
-            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowPinButtonPrefKey, "收藏按钮", 
+            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowOtherPrefKey, "其他元素记录", 
+                "Toggle to show/hide other history.", true);
+
+            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowFavoriteButtonPrefKey, "收藏按钮", 
                 "Toggle to show/hide favorite Reference button.", true);
+
+            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowPingButtonPrefKey, "定位按钮", 
+                "Toggle to show/hide ping button.", true);
+
+            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowOpenButtonPrefKey, "打开按钮", 
+                "Toggle to show/hide open button.", false);
             
             menu.AddItem(new GUIContent("打开首选项"), false, delegate
             {
@@ -586,7 +614,8 @@ namespace Gemserk
             menu.AddItem(new GUIContent(name, tooltip), false, delegate
             {
                 ToggleBoolEditorPref(preference, defaultValue);
-                ReloadRootAndRemoveUnloadedAndDuplicated();
+                // ReloadRootAndRemoveUnloadedAndDuplicated();
+                FavoritesAsset.instance.InvokeUpdate();
             });
         }
 

@@ -64,7 +64,11 @@ namespace Gemserk
                 selectionHistory.SetSelection(entry.Reference);
                 Selection.activeObject = entry.Reference;
                 SelectionHistoryWindowUtils.PingEntry(entry);
-                AssetDatabase.OpenAsset(entry.Reference);
+                string assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
+				if (assetPath.EndsWith(".prefab"))
+				{
+                    AssetDatabase.OpenAsset(entry.Reference);
+				}
             }
             
             if (evt.button == 1)

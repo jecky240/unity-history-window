@@ -204,7 +204,10 @@ namespace Gemserk
 
         public Object GetSelection()
         {
-            return currentSelection.Reference;
+            if(currentSelection != null){
+                return currentSelection.Reference;
+            }
+            return null;
         }
 
         public void UpdateSelection(Object selection)
@@ -212,15 +215,18 @@ namespace Gemserk
             if (selection == null)
                 return;
 
-            var lastSelectedObject = _history.Count > 0 ? _history.Last() : null;
+            // var lastSelectedObject = _history.Count > 0 ? _history.Last() : null;
 
-            var isLastSelected = lastSelectedObject != null && lastSelectedObject.Reference == selection;
-            var isCurrentSelection = currentSelection != null && currentSelection.Reference == selection;
+            // var isLastSelected = lastSelectedObject != null && lastSelectedObject.Reference == selection;
+            // var isCurrentSelection = currentSelection != null && currentSelection.Reference == selection;
+            var hasSelection = CheckHasObject(selection);
             
-            if (!isLastSelected && !isCurrentSelection)
+            if (!hasSelection)
             {
                 _history.Add(new Entry(selection));
                 currentSelectionIndex = _history.Count - 1;
+            } else {
+                currentSelectionIndex = _history.FindIndex(e => selection.Equals(e.Reference));
             }
 
             if (_history.Count > historySize && historySize > 0)
@@ -229,15 +235,29 @@ namespace Gemserk
                 //			_history.RemoveAt(0);
             }
             
-            if (!isLastSelected && !isCurrentSelection)
+            if (!hasSelection)
             {
                 OnNewEntryAdded?.Invoke(this);
             }
         }
 
+        private bool CheckHasObject(Object selection)
+        {
+            var findIndex = _history.FindIndex(e => selection.Equals(e.Reference));
+            return findIndex >= 0;
+        }
+
         public void Remove(Entry obj)
         {
+            var currentReference = GetSelection();
+            if(obj.Reference == currentReference){
+                currentSelectionIndex = -1;
+                currentReference = null;
+            }
             _history.Remove(obj);
+            if(currentReference != null){
+                currentSelectionIndex = _history.FindIndex(e => currentReference.Equals(e.Reference));
+            }
         }
 
         public void Previous()
