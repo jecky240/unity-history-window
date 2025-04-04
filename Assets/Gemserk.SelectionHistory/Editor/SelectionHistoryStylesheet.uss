@@ -36,7 +36,7 @@
 .favorite #OpenPrefabIcon {
     max-width: 16px;
     max-height: 16px;
-    right: 56px;
+    right: 30px;
     position: absolute;
     /* align-self: flex-end; */
 }
@@ -103,7 +103,7 @@
 .history #OpenPrefabIcon {
     max-width: 16px;
     max-height: 16px;
-    right: 82px;
+    right: 56px;
     position: absolute;
     /* align-self: flex-end; */
 }

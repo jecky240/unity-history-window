@@ -13,7 +13,7 @@ namespace Gemserk
         public const string favoriteEmptyIconName = "Toolbar Plus";
         #endif
 
-        
+        public const string plusIconName = "Toolbar Plus";
         public const string removeIconName = "Toolbar Minus";
         public const string tagIconName = "AssetLabelIcon";//标签icon
         public const string searchIconName = "Search Icon";

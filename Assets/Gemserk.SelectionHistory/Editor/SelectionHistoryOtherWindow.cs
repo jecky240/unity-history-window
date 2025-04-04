@@ -8,39 +8,16 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace Gemserk
-{
-    public static class SelectionHistoryWindowExtensions
+{   
+    public class SelectionHistoryOtherWindow : EditorWindow, IHasCustomMenu
     {
-        public static SelectionHistory.Entry GetEntry(this SelectionHistory selectionHistory, int index)
-        {
-            if (index < 0 || index >= selectionHistory.GetHistoryCount())
-            {
-                return null;
-            }
-
-            return selectionHistory.History[index];
-        }
-
-        public static bool IsSceneAsset(this SelectionHistory.Entry entry)
-        {
-            return entry.isReferenced && entry.isAsset && entry.reference is SceneAsset;
-        }
-
-        public static bool IsPrefabAsset(this SelectionHistory.Entry entry)
-        {
-            return entry.isReferenced && entry.isAsset && PrefabUtility.IsPartOfPrefabAsset(entry.Reference) && entry.Reference is GameObject;
-        }
-    }
-    
-    public class SelectionHistoryWindow : EditorWindow, IHasCustomMenu
-    {
-        [MenuItem("Window/Selection History/[1] 打开预制体历史记录 %#,")]
+        [MenuItem("Window/Selection History/[2] 打开其他历史记录 %#.")]
         public static void OpenWindow()
         {
-            var window = GetWindow<SelectionHistoryWindow>();
-            var titleContent = EditorGUIUtility.IconContent(UnityBuiltInIcons.tagIconName);
-            titleContent.text = "预制体";
-            titleContent.tooltip = "预制体历史记录";
+            var window = GetWindow<SelectionHistoryOtherWindow>();
+            var titleContent = EditorGUIUtility.IconContent(UnityBuiltInIcons.plusIconName);
+            titleContent.text = "其他";
+            titleContent.tooltip = "其他历史记录";
             window.titleContent = titleContent;
         }
         
@@ -83,7 +60,7 @@ namespace Gemserk
                 selectionHistory.OnNewEntryAdded -= OnHistoryEntryAdded;
             }
             
-            // Selection.selectionChanged -= OnSelectionChanged;
+            Selection.selectionChanged -= OnSelectionChanged;
 
             styleSheet = null;
             historyElementViewTree = null;
@@ -91,7 +68,7 @@ namespace Gemserk
 
         public void OnEnable()
         {
-            GetDefaultElements();
+            GetDefaultElements();  
             
             EditorSceneManager.sceneOpened += OnSceneOpened;
             
@@ -114,7 +91,7 @@ namespace Gemserk
             
             ReloadRootAndRemoveUnloadedAndDuplicated();
             
-            // Selection.selectionChanged += OnSelectionChanged;
+            Selection.selectionChanged += OnSelectionChanged;
         }
 
         private void RegenerateUI()
@@ -137,9 +114,9 @@ namespace Gemserk
             
             var clearButton = new Button(delegate
             {
-                selectionHistory.ClearPrefab();
-                FavoritesAsset.instance.InvokeUpdate(); 
-            }) {text = "清空预制体历史记录"};
+                selectionHistory.ClearOther();
+                FavoritesAsset.instance.InvokeUpdate();
+            }) {text = "清空其他历史记录"};
             
             root.Add(clearButton);
             
@@ -185,7 +162,7 @@ namespace Gemserk
         {
             var size = selectionHistory.GetHistoryCount();
             if(size == 0){
-                size = 1; 
+                size = 1;
             }
 
             for (int i = 0; i < size; i++)
@@ -213,19 +190,30 @@ namespace Gemserk
                 dragArea.AddManipulator(new HistoryElementDragManipulator(selectionHistory, historyIndex));
             }
             
-            var pingIcon = selectionElementRoot.Q<Image>("PingIcon");
-            if (pingIcon != null)
+            var openPrefabIcon = selectionElementRoot.Q<Image>("OpenPrefabIcon");
+            if (openPrefabIcon != null)
             {
-                pingIcon.image = EditorGUIUtility.IconContent(UnityBuiltInIcons.searchIconName).image;
-                pingIcon.tooltip = "定位";
-                pingIcon.RegisterCallback(delegate(MouseUpEvent e)
+                openPrefabIcon.image = EditorGUIUtility.IconContent(UnityBuiltInIcons.openAssetIconName).image;
+                openPrefabIcon.tooltip = "打开";
+                openPrefabIcon.RegisterCallback(delegate(MouseUpEvent e)
                 {
                     var entry = selectionHistory.GetEntry(historyIndex);
+
                     if (entry == null)
                     {
                         return;
                     }
-                    SelectionHistoryWindowUtils.PingEntry(entry);
+                    
+                    if (entry.isAsset || entry.IsSceneAsset())
+                    {
+                        AssetDatabase.OpenAsset(entry.Reference);
+                    } else if (entry.isUnloadedHierarchyObject)
+                    {
+                        if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                        {
+                            EditorSceneManager.OpenScene(entry.scenePath);
+                        }
+                    }
                 });
             }
 
@@ -270,29 +258,15 @@ namespace Gemserk
             return selectionElementRoot;
         }
 
-        // private void OnSelectionChanged()
-        // {
-        //     if (SelectionHistoryWindowUtils.RecordInTheBackground)
-        //     {
-        //         return;
-        //     }
+        private void OnSelectionChanged()
+        {
+            if (SelectionHistoryWindowUtils.RecordInTheBackground)
+            {
+                return;
+            }
 
-        //     if (Selection.activeObject != null)
-		// 	{
-        //         var needRecord = false;
-        //         if(SelectionHistoryWindowUtils.OnlyRecordPrefabAndSprite)
-        //         {
-        //             needRecord = SelectionHistoryUtils.isSprite(Selection.activeObject);
-        //         } else {
-        //             needRecord = SelectionHistoryUtils.isOther(Selection.activeObject);
-        //         }
-        //         if(needRecord)
-        //         {
-        //             SelectionHistoryWindowUtils.RecordSelectionChange(); 
-        //         }
-        //         FavoritesAsset.instance.InvokeUpdate();
-		// 	}
-        // }
+            SelectionHistoryWindowUtils.Record();
+        }
 
         private void OnHistoryEntryAdded(SelectionHistory selectionHistory)
         {
@@ -359,11 +333,11 @@ namespace Gemserk
             {
                 var visualElement = visualElements[i];
                 visualElement.style.backgroundColor = new Color(0.196f, 0.196f, 0.196f, 1f);
+
                 var entry = selectionHistory.GetEntry(i);
                 
-                var isPrefab = entry != null && SelectionHistoryUtils.isPrefab(entry.Reference);
-
-                if (entry == null || !isPrefab)
+                var isOther = entry != null && SelectionHistoryUtils.isOther(entry.Reference);
+                if (entry == null || !isOther)
                 {
                     visualElement.style.display = DisplayStyle.None;
                 }
@@ -443,33 +417,43 @@ namespace Gemserk
                         icon.image = AssetPreview.GetMiniThumbnail(entry.Reference);
                     }
                     
+                    var openPrefabIcon = visualElement.Q<Image>("OpenPrefabIcon");
+                    if (openPrefabIcon != null)
+                    {
+                        openPrefabIcon.ClearClassList();
+                        
+                        if (isAsset || isSceneAsset || entry.isUnloadedHierarchyObject)
+                        {
+                            openPrefabIcon.RemoveFromClassList("hidden");
+                        }
+                        else
+                        {
+                            openPrefabIcon.AddToClassList("hidden");
+                        }
+                        if (!SelectionHistoryWindowUtils.ShowOpenButton || !SelectionHistoryWindowUtils.ShowFavoriteButton2 ||!entry.isReferenced)
+                        {
+                            openPrefabIcon.style.display = DisplayStyle.None;
+                        }
+                        else
+                        {
+                            openPrefabIcon.style.display = DisplayStyle.Flex;
+                        }
+                    }
+                    
                     var favoriteAsset = visualElement.Q<Image>("Favorite");
-                    if (!SelectionHistoryWindowUtils.ShowFavoriteButton || !entry.isReferenced)
+                    if (!SelectionHistoryWindowUtils.ShowFavoriteButton2 || !entry.isReferenced)
                     {
                         favoriteAsset.style.display = DisplayStyle.None;
                     }
                     else
                     {
                         favoriteAsset.style.display = DisplayStyle.Flex;
-                        
+                         
                         var isFavorite = FavoritesAsset.instance.IsFavorite(entry.Reference);
                         
                         favoriteAsset.image = isFavorite
                             ? EditorGUIUtility.IconContent(UnityBuiltInIcons.favoriteIconName).image
                             : EditorGUIUtility.IconContent(UnityBuiltInIcons.favoriteEmptyIconName).image;
-                    }
-                    
-                    var pingIcon = visualElement.Q<Image>("PingIcon");
-                    if (pingIcon != null)
-                    {
-                        if (!SelectionHistoryWindowUtils.ShowPingButton || !SelectionHistoryWindowUtils.ShowFavoriteButton ||!entry.isReferenced)
-                        {
-                            pingIcon.style.display = DisplayStyle.None;
-                        }
-                        else
-                        {
-                            pingIcon.style.display = DisplayStyle.Flex;
-                        }
                     }
 
                     var removeIcon = visualElement.Q<Image>("RemoveIcon");
@@ -481,7 +465,7 @@ namespace Gemserk
                         }
                         else
                         {
-                            removeIcon.style.display = DisplayStyle.Flex;
+                            removeIcon.style.display = DisplayStyle.Flex; 
                         }
                     }
                 }
@@ -506,8 +490,8 @@ namespace Gemserk
             // if(index > visualElements.Count - 1){
             //     index = visualElements.Count - 1;
             // }
-            // Debug.Log("index:" + index);
-            // Debug.Log("visualElements:" + visualElements.Count);
+            // Debug.Log("other index:" + index);
+            // Debug.Log("other visualElements:" + visualElements.Count);
             
             if (mainScrollElement != null)
             {
@@ -521,39 +505,12 @@ namespace Gemserk
         }
 
         public void AddItemsToMenu(GenericMenu menu)
-        {
-            menu.AddItem(new GUIContent("打开首选项"), false, delegate
-            {
-                SettingsService.OpenUserPreferences("Selection History");
-            });
-            // var showHierarchyViewObjects =
-            //     EditorPrefs.GetBool(SelectionHistoryWindowUtils.HistoryShowHierarchyObjectsPrefKey, false);
-            
-            // AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowHierarchyObjectsPrefKey, "视图界面元素", 
-            //     "Toggle to show/hide objects from scene hierarchy view.", false);
-		 
-            // if (showHierarchyViewObjects && !SelectionHistoryWindowUtils.AutomaticRemoveUnloaded)
-            // {
-            //     AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.ShowUnloadedObjectsKey, "已卸载元素", 
-            //         "Toggle to show/hide unloaded objects from scenes hierarchy view.", true);
-            // } 
-		    
-            // if (!SelectionHistoryWindowUtils.AutomaticRemoveDestroyed)
-            // {
-            //     AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.ShowDestroyedObjectsKey, "已销毁元素",
-            //         "Toggle to show/hide unreferenced or destroyed objects.", true);
-            // }
+        {		             
+            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowFavoriteButtonPrefKey2, " [收藏&&打开] 按钮", 
+                "Toggle to show/hide favorite & open button.", true);
 
-            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowFavoriteButtonPrefKey, " [收藏&&定位] 按钮", 
-                "Toggle to show/hide favorite & ping button.", true);
-
-            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowPingButtonPrefKey, " [定位] 按钮", 
-                "Toggle to show/hide ping button.", true);
-            
-            // menu.AddItem(new GUIContent("Reload UI"), false, delegate
-            // {
-            //     RegenerateUI();
-            // });
+            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowOpenButtonPrefKey, " [打开] 按钮", 
+                "Toggle to show/hide open button.", true);
             menu.AddItem(new GUIContent("一键清除所有历史"), false, delegate
             {
                 selectionHistory.Clear();
@@ -581,7 +538,6 @@ namespace Gemserk
         {
             var newValue = !EditorPrefs.GetBool(preferenceName, defaultValue);
             EditorPrefs.SetBool(preferenceName, newValue);
-            // return newValue;
         }
     }
 }
