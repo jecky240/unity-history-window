@@ -172,10 +172,11 @@ namespace Gemserk
         {
             searchToolbar = new ToolbarSearchField();
             searchToolbar.AddToClassList("searchToolbar");
+            searchToolbar.SetValueWithoutNotify(searchText);
             searchToolbar.RegisterValueChangedCallback(evt =>
             {
                 searchText = evt.newValue;
-                ReloadRoot();
+                ReloadRoot(false);
             });
 
             return searchToolbar;
@@ -319,11 +320,12 @@ namespace Gemserk
             ReloadRoot();
         }
 
-        private void ReloadRoot()
+        private void ReloadRoot(bool needRegenerateUI = true)
         {
             //if (visualElements.Count != selectionHistory.historySize)
             //{
-                // RegenerateUI();
+            if(needRegenerateUI)
+                RegenerateUI(); 
             //}
             
             var showHierarchyViewObjects =
@@ -500,20 +502,12 @@ namespace Gemserk
         public void ScrollToLatestSelection()
         {
             var index = selectionHistory.GetSelectedIndex();
-            // if(index < 0){
-            //     index = 0;
-            // }
-            // if(index > visualElements.Count - 1){
-            //     index = visualElements.Count - 1;
-            // }
-            // Debug.Log("index:" + index);
-            // Debug.Log("visualElements:" + visualElements.Count);
-            
+
             if (mainScrollElement != null)
             {
                 mainScrollElement.contentContainer.style.flexDirection = SelectionHistoryWindowUtils.OrderLastSelectedFirst ? FlexDirection.ColumnReverse : FlexDirection.Column;
 
-                if (index >= 0)
+                if (index >= 0 && index <= visualElements.Count - 1)
                 {
                     mainScrollElement.ScrollTo(visualElements[index]);
                 }
