@@ -58,11 +58,10 @@ namespace Gemserk
                 }
                 Selection.activeObject = assetReference;
                 EditorGUIUtility.PingObject(assetReference);
-                string assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
-				if (assetPath.EndsWith(".prefab"))
-				{
+                if(SelectionHistoryUtils.isPrefab(assetReference))
+                {
                     AssetDatabase.OpenAsset(assetReference);
-				}
+                }
             }
             
             if (evt.button == 1)

@@ -7,9 +7,9 @@ using UnityEngine.UIElements;
 
 namespace Gemserk
 {
-    public class FavoriteAssetsWindow : EditorWindow
+    public class FavoriteAssetsWindow : EditorWindow, IHasCustomMenu
     {
-        [MenuItem("Window/Selection History/[4] 打开收藏夹")]
+        [MenuItem("Window/Selection History/[3] 打开收藏夹 %#/")]
         public static void OpenWindow()
         {
             var window = GetWindow<FavoriteAssetsWindow>();
@@ -19,12 +19,12 @@ namespace Gemserk
             window.titleContent = titleContent;
         }
 
-        [MenuItem("Window/Selection History/[5] 加入收藏夹")]
-        [Shortcut("Gemserk/Favorite Item", null, KeyCode.F, ShortcutModifiers.Shift | ShortcutModifiers.Alt)]
-        public static void Favorite()
-        { 
-            FavoriteElements(Selection.objects);
-        }
+        // [MenuItem("Window/Selection History/[5] 加入收藏夹")]
+        // [Shortcut("Gemserk/Favorite Item", null, KeyCode.F, ShortcutModifiers.Shift | ShortcutModifiers.Alt)]
+        // public static void Favorite()
+        // { 
+        //     FavoriteElements(Selection.objects);
+        // }
 
         private static bool CanBeFavorite(Object reference)
         {
@@ -230,7 +230,7 @@ namespace Gemserk
                     {
                         EditorGUIUtility.PingObject(assetReference);
                     });
-                    if (!SelectionHistoryWindowUtils.ShowPingButton)
+                    if (SelectionHistoryUtils.isOther(assetReference) || !SelectionHistoryWindowUtils.ShowPingButton2)
                     {
                         pingIcon.style.display = DisplayStyle.None;
                     }
@@ -266,7 +266,7 @@ namespace Gemserk
                     {
                         AssetDatabase.OpenAsset(assetReference);
                     });
-                    if (!SelectionHistoryWindowUtils.ShowOpenButton)
+                    if (SelectionHistoryUtils.isPrefab(assetReference) || !SelectionHistoryWindowUtils.ShowOpenButton2)
                     {
                         openPrefabIcon.style.display = DisplayStyle.None;
                     }
@@ -288,6 +288,48 @@ namespace Gemserk
             var receiveDragArea = new VisualElement();
             receiveDragArea.style.flexGrow = 1;
             root.Add(receiveDragArea);
+        }
+
+        public void AddItemsToMenu(GenericMenu menu)
+        {		             
+            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowPingButtonPrefKey2, " [定位] 按钮", 
+                "Toggle to show/hide ping button.", true);
+
+            AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowOpenButtonPrefKey2, " [打开] 按钮", 
+                "Toggle to show/hide open button.", true);
+            menu.AddItem(new GUIContent("一键清除所有历史"), false, delegate
+            {
+                var selectionHistory = SelectionHistoryAsset.instance.selectionHistory;
+                if(selectionHistory != null){
+                    selectionHistory.Clear();
+                }
+                FavoritesAsset.instance.InvokeUpdate(); 
+            });
+            menu.AddItem(new GUIContent("一键清除 [历史&&收藏夹]"), false, delegate 
+            {
+                var selectionHistory = SelectionHistoryAsset.instance.selectionHistory;
+                if(selectionHistory != null){
+                    selectionHistory.Clear();
+                }
+                FavoritesAsset.instance.RemoveAll();
+            });
+        }
+
+        private void AddMenuItemForPreference(GenericMenu menu, string preference, string text, string tooltip, bool defaultValue)
+        {
+            var value = EditorPrefs.GetBool(preference, defaultValue);
+            var name = value ? $"隐藏{text}" : $"显示{text}";
+            menu.AddItem(new GUIContent(name, tooltip), false, delegate
+            {
+                ToggleBoolEditorPref(preference, defaultValue);
+                ReloadRoot();
+            });
+        }
+
+        private static void ToggleBoolEditorPref(string preferenceName, bool defaultValue)
+        {
+            var newValue = !EditorPrefs.GetBool(preferenceName, defaultValue);
+            EditorPrefs.SetBool(preferenceName, newValue);
         }
     }
 }

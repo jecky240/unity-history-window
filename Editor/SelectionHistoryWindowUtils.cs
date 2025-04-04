@@ -14,13 +14,15 @@ namespace Gemserk
 		public static readonly string HistoryAllowDuplicatedEntriesPrefKey = "Gemserk.SelectionHistory.AllowDuplicatedEntries";
 	    public static readonly string HistoryShowHierarchyObjectsPrefKey = "Gemserk.SelectionHistory.ShowHierarchyObjects";
 
-		public static readonly string HistoryShowOtherPrefKey = "Gemserk.SelectionHistory.ShowOtherHistory";
+		public static readonly string HistoryOnlyRecordPrefabAndSpritePrefKey = "Gemserk.SelectionHistory.OnlyRecordPrefabAndSprite";
 
 	    public static readonly string HistoryShowFavoriteButtonPrefKey = "Gemserk.SelectionHistory.ShowFavoritesPinButton";
-
 		public static readonly string HistoryShowPingButtonPrefKey = "Gemserk.SelectionHistory.ShowPingButton";
-
 		public static readonly string HistoryShowOpenButtonPrefKey = "Gemserk.SelectionHistory.ShowOpenButton";
+
+		public static readonly string HistoryShowFavoriteButtonPrefKey2 = "Gemserk.SelectionHistory.ShowFavoritesPinButton2";
+		public static readonly string HistoryShowPingButtonPrefKey2 = "Gemserk.SelectionHistory.ShowPingButton2";
+		public static readonly string HistoryShowOpenButtonPrefKey2 = "Gemserk.SelectionHistory.ShowOpenButton2";
 
 	    public static readonly string ShowUnloadedObjectsKey = "Gemserk.SelectionHistory.ShowUnloadedObjects";
 	    public static readonly string ShowDestroyedObjectsKey = "Gemserk.SelectionHistory.ShowDestroyedObjects";
@@ -42,8 +44,27 @@ namespace Gemserk
 		    if (!RecordInTheBackground)
 			    return;
 
-		    RecordSelectionChange();
+		    Record();
 	    }
+
+		public static void Record()
+		{
+			if (Selection.activeObject != null)
+			{
+                var needRecord = false;
+                if(SelectionHistoryWindowUtils.OnlyRecordPrefabAndSprite)
+                {
+                    needRecord = SelectionHistoryUtils.isSprite(Selection.activeObject);
+                } else {
+                    needRecord = SelectionHistoryUtils.isOther(Selection.activeObject);
+                }
+                if(needRecord)
+                {
+                    SelectionHistoryWindowUtils.RecordSelectionChange();  
+                }
+                FavoritesAsset.instance.InvokeUpdate();
+			}
+		}
 
 		[OnOpenAsset]
 		public static bool OnOpenAssetCallback(int instanceID, int line)
@@ -51,8 +72,7 @@ namespace Gemserk
 			// string name = EditorUtility.InstanceIDToObject(instanceID).name;
 			if (Selection.activeObject != null)
 			{
-				string assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
-				if (assetPath.EndsWith(".prefab") || assetPath.EndsWith(".png"))
+				if(SelectionHistoryUtils.isPrefab(Selection.activeObject))
 				{
 					RecordSelectionChange();
 				}
@@ -69,7 +89,7 @@ namespace Gemserk
 				    Debug.Log("Recording new selection: " + Selection.activeObject.name);
 			    }
 
-			    var isSceneObject = SelectionHistoryUtils.IsSceneObject(Selection.activeObject);
+			    var isSceneObject = SelectionHistoryUtils.IsSceneObject(Selection.activeObject); 
 			    
 			    if (!SelectionHistoryWindowUtils.ShowHierarchyViewObjects)
 			    {
@@ -89,23 +109,23 @@ namespace Gemserk
 		    }
 	    }
 
-	    [MenuItem("Window/Selection History/[1] 上一项 %#,")]
-	    [Shortcut("Selection History/Previous Selection")]
-	    public static void PreviousSelection()
-	    {
-		    var selectionHistory = SelectionHistoryAsset.instance.selectionHistory;
-		    selectionHistory.Previous ();
-		    Selection.activeObject = selectionHistory.GetSelection ();
-	    }
+	    // [MenuItem("Window/Selection History/[1] 上一项 %#,")]
+	    // [Shortcut("Selection History/Previous Selection")]
+	    // public static void PreviousSelection()
+	    // {
+		//     var selectionHistory = SelectionHistoryAsset.instance.selectionHistory;
+		//     selectionHistory.Previous ();
+		//     Selection.activeObject = selectionHistory.GetSelection ();
+	    // }
 
-	    [MenuItem("Window/Selection History/[2] 下一项 %#.")]
-	    [Shortcut("Selection History/Next Selection")]
-	    public static void NextSelection()
-	    {
-		    var selectionHistory = SelectionHistoryAsset.instance.selectionHistory;
-		    selectionHistory.Next();
-		    Selection.activeObject = selectionHistory.GetSelection ();
-	    }
+	    // [MenuItem("Window/Selection History/[2] 下一项 %#.")]
+	    // [Shortcut("Selection History/Next Selection")]
+	    // public static void NextSelection()
+	    // {
+		//     var selectionHistory = SelectionHistoryAsset.instance.selectionHistory;
+		//     selectionHistory.Next();
+		//     Selection.activeObject = selectionHistory.GetSelection ();
+	    // }
 		
 		public static bool AutomaticRemoveDestroyed =>
 			EditorPrefs.GetBool(HistoryAutomaticRemoveDestroyedPrefKey, true);
@@ -119,14 +139,14 @@ namespace Gemserk
 		public static bool ShowHierarchyViewObjects =>
 			EditorPrefs.GetBool(HistoryShowHierarchyObjectsPrefKey, false);
 		
+		public static bool OnlyRecordPrefabAndSprite =>
+			EditorPrefs.GetBool(HistoryOnlyRecordPrefabAndSpritePrefKey, true);
+
 		public static bool ShowUnloadedObjects =>
 			EditorPrefs.GetBool(ShowUnloadedObjectsKey, true);
 		
 		public static bool ShowDestroyedObjects =>
 			EditorPrefs.GetBool(ShowDestroyedObjectsKey, false);
-		
-		public static bool ShowOtherHistory =>
-			EditorPrefs.GetBool(HistoryShowOtherPrefKey, true);
 
 		public static bool ShowFavoriteButton =>
 			EditorPrefs.GetBool(HistoryShowFavoriteButtonPrefKey, true);
@@ -135,13 +155,22 @@ namespace Gemserk
 			EditorPrefs.GetBool(HistoryShowPingButtonPrefKey, true);
 
 		public static bool ShowOpenButton =>
-			EditorPrefs.GetBool(HistoryShowOpenButtonPrefKey, false);
+			EditorPrefs.GetBool(HistoryShowOpenButtonPrefKey, true);
+
+		public static bool ShowFavoriteButton2 =>
+			EditorPrefs.GetBool(HistoryShowFavoriteButtonPrefKey2, true);
+
+		public static bool ShowPingButton2 =>
+			EditorPrefs.GetBool(HistoryShowPingButtonPrefKey2, true);
+
+		public static bool ShowOpenButton2 =>
+			EditorPrefs.GetBool(HistoryShowOpenButtonPrefKey2, true);
 		
 		public static bool OrderLastSelectedFirst =>
 			EditorPrefs.GetBool(OrderLastSelectedFirstKey, false);
 		
 		public static bool RecordInTheBackground =>
-			EditorPrefs.GetBool(BackgroundRecordKey, false);
+			EditorPrefs.GetBool(BackgroundRecordKey, true);
 	
 
 	    public static void PingEntry(SelectionHistory.Entry e)

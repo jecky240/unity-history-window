@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+
 using Object = UnityEngine.Object;
 
 namespace Gemserk
@@ -16,6 +19,38 @@ namespace Gemserk
             }
             return false;
         }
+
+        public static bool isPrefab(Object obj)
+		{
+			if (obj == null)
+				return false;
+
+			var path = AssetDatabase.GetAssetPath(obj);
+			return path.EndsWith(".prefab");
+		}
+
+		public static bool isOther(Object obj)
+		{
+			if (obj == null)
+				return false;
+
+			//判断是否是视图元素(预制体里的元素)
+            var isSceneObject = IsSceneObject(obj);
+			if (isSceneObject)
+				return false;
+
+			var path = AssetDatabase.GetAssetPath(obj);
+			return !path.EndsWith(".prefab");
+		}
+
+		public static bool isSprite(Object obj)
+		{
+			if (obj == null)
+				return false;
+
+			var path = AssetDatabase.GetAssetPath(obj);
+			return path.EndsWith(".png") || path.EndsWith(".jpg") || path.EndsWith(".jpeg");
+		}
     }
     
     [Serializable]
@@ -150,7 +185,7 @@ namespace Gemserk
             }
         }
         
-        public int historySize = 200;
+        public int historySize = 0;
 
         [SerializeField] 
         private List<Entry> _history = new List<Entry>(100);
@@ -190,6 +225,36 @@ namespace Gemserk
             if (currentSelection.GetReferenceState() == Entry.State.Referenced)
                 return currentSelection.Reference.Equals(obj);
             return false;
+        }
+
+        public void ClearPrefab()
+        {
+            var currentReference = GetSelection();
+            if(currentReference != null){
+                if(SelectionHistoryUtils.isPrefab(currentReference)){
+                    currentSelectionIndex = -1;
+                    currentReference = null;
+                } 
+            }
+            _history.RemoveAll(e => SelectionHistoryUtils.isPrefab(e.Reference));
+            if(currentReference != null){
+                currentSelectionIndex = _history.FindIndex(e => currentReference.Equals(e.Reference));
+            }
+        }
+
+        public void ClearOther()
+        {
+            var currentReference = GetSelection();
+            if(currentReference != null){
+                if(SelectionHistoryUtils.isOther(currentReference)){
+                    currentSelectionIndex = -1;
+                    currentReference = null;
+                } 
+            }
+            _history.RemoveAll(e => SelectionHistoryUtils.isOther(e.Reference));
+            if(currentReference != null){
+                currentSelectionIndex = _history.FindIndex(e => currentReference.Equals(e.Reference));
+            }
         }
 
         public void Clear()
