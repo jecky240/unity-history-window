@@ -11,13 +11,13 @@ namespace Gemserk
 {   
     public class SelectionHistoryOtherWindow : EditorWindow, IHasCustomMenu
     {
-        [MenuItem("Window/Selection History/[2] 打开其他历史记录 %#.")]
+        [MenuItem("Window/Selection History/[2] 打开资源历史记录 %#.")]
         public static void OpenWindow()
         {
             var window = GetWindow<SelectionHistoryOtherWindow>();
             var titleContent = EditorGUIUtility.IconContent(UnityBuiltInIcons.plusIconName);
-            titleContent.text = "其他";
-            titleContent.tooltip = "其他历史记录";
+            titleContent.text = "资源";
+            titleContent.tooltip = "资源历史记录";
             window.titleContent = titleContent;
         }
         
@@ -116,7 +116,7 @@ namespace Gemserk
             {
                 selectionHistory.ClearOther();
                 FavoritesAsset.instance.InvokeUpdate();
-            }) {text = "清空其他历史记录"};
+            }) {text = "清空资源历史记录"};
             
             root.Add(clearButton);
             
@@ -149,10 +149,11 @@ namespace Gemserk
         {
             searchToolbar = new ToolbarSearchField();
             searchToolbar.AddToClassList("searchToolbar");
+            searchToolbar.SetValueWithoutNotify(searchText);
             searchToolbar.RegisterValueChangedCallback(evt =>
             {
                 searchText = evt.newValue;
-                ReloadRoot();
+                ReloadRoot(false);
             });
 
             return searchToolbar;
@@ -293,11 +294,12 @@ namespace Gemserk
             ReloadRoot();
         }
 
-        private void ReloadRoot()
+        private void ReloadRoot(bool needRegenerateUI = true)
         {
             //if (visualElements.Count != selectionHistory.historySize)
             //{
-                // RegenerateUI();
+            if(needRegenerateUI)
+                RegenerateUI(); 
             //}
             
             var showHierarchyViewObjects =
@@ -484,20 +486,12 @@ namespace Gemserk
         public void ScrollToLatestSelection()
         {
             var index = selectionHistory.GetSelectedIndex();
-            // if(index < 0){
-            //     index = 0;
-            // }
-            // if(index > visualElements.Count - 1){
-            //     index = visualElements.Count - 1;
-            // }
-            // Debug.Log("other index:" + index);
-            // Debug.Log("other visualElements:" + visualElements.Count);
-            
+
             if (mainScrollElement != null)
             {
                 mainScrollElement.contentContainer.style.flexDirection = SelectionHistoryWindowUtils.OrderLastSelectedFirst ? FlexDirection.ColumnReverse : FlexDirection.Column;
 
-                if (index >= 0)
+                if (index >= 0 && index <= visualElements.Count - 1)
                 {
                     mainScrollElement.ScrollTo(visualElements[index]);
                 }
@@ -505,12 +499,12 @@ namespace Gemserk
         }
 
         public void AddItemsToMenu(GenericMenu menu)
-        {		             
+        {      
             AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowFavoriteButtonPrefKey2, " [收藏&&打开] 按钮", 
                 "Toggle to show/hide favorite & open button.", true);
 
             AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowOpenButtonPrefKey, " [打开] 按钮", 
-                "Toggle to show/hide open button.", true);
+                "Toggle to show/hide open button.", true); 
             menu.AddItem(new GUIContent("一键清除所有历史"), false, delegate
             {
                 selectionHistory.Clear();
