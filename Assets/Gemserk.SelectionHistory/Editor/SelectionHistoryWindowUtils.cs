@@ -66,7 +66,7 @@ namespace Gemserk
 			}
 		}
 
-		[OnOpenAsset]
+		[OnOpenAsset(0)]
 		public static bool OnOpenAssetCallback(int instanceID, int line)
 		{
 			// string name = EditorUtility.InstanceIDToObject(instanceID).name;
