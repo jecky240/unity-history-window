@@ -1,3 +1,3 @@
 
 # pushes subtree into specific branch name
-git subtree push --prefix Assets/Gemserk.SelectionHistory origin upm-package-1.1.1
+git subtree push --prefix Assets/Gemserk.SelectionHistory origin upm-package-1.0.0
