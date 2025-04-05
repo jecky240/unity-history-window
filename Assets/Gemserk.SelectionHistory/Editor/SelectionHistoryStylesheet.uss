@@ -1,7 +1,7 @@
 .favorite {
     font-size: 12px;
     -unity-text-align: middle-left;
-    margin: 2px;
+    margin: 1px;
     padding: 3px;
     background-color: rgba(0, 0, 0, 0.1);
     border-color: black;
@@ -52,7 +52,7 @@
 .history {
     font-size: 12px;
     -unity-text-align: middle-left;
-    margin: 2px;
+    margin: 1px;
     padding: 3px;
     background-color: rgba(0, 0, 0, 0.1);
     border-color: black;

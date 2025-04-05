@@ -206,6 +206,7 @@ namespace Gemserk
         
         public List<Entry> History => _history;
         
+        public event Action<SelectionHistory> OnNewPrefabAdded;
         public event Action<SelectionHistory> OnNewEntryAdded;
 
         public bool IsSelected(int index)
@@ -302,7 +303,11 @@ namespace Gemserk
             
             if (!hasSelection)
             {
-                OnNewEntryAdded?.Invoke(this);
+                if(SelectionHistoryUtils.isPrefab(selection)){
+                    OnNewPrefabAdded?.Invoke(this);
+                } else {
+                    OnNewEntryAdded?.Invoke(this);
+                }
             }
         }
 

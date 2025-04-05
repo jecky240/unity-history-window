@@ -17,6 +17,7 @@ namespace Gemserk
         }
     
         public event Action<FavoritesAsset> OnFavoritesUpdated;
+        public event Action<FavoritesAsset> OnFavoritesUpdatedWithNoScroll;
 
         [SerializeField]
         public List<Favorite> favoritesList = new List<Favorite>();
@@ -24,7 +25,7 @@ namespace Gemserk
         public void AddFavorite(Favorite favorite)
         {
             favoritesList.Add(favorite);
-            OnFavoritesUpdated?.Invoke(this);
+            OnFavoritesUpdatedWithNoScroll?.Invoke(this);
             Save(true);
         }
 
@@ -36,20 +37,25 @@ namespace Gemserk
         public void RemoveFavorite(Object reference)
         {
             favoritesList.RemoveAll(f => f.reference == reference);
-            OnFavoritesUpdated?.Invoke(this);
+            OnFavoritesUpdatedWithNoScroll?.Invoke(this);
             Save(true);
         }
 
         public void RemoveAll()
         {
             favoritesList.Clear();
-            OnFavoritesUpdated?.Invoke(this);
+            OnFavoritesUpdatedWithNoScroll?.Invoke(this);
             Save(true);
         }
 
         public void InvokeUpdate()
         {
             OnFavoritesUpdated?.Invoke(this);
+        }
+
+        public void InvokeUpdateWithNoScroll()
+        {
+            OnFavoritesUpdatedWithNoScroll?.Invoke(this);
         }
     }
 }

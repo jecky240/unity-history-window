@@ -60,7 +60,7 @@ namespace Gemserk
                 selectionHistory.OnNewEntryAdded -= OnHistoryEntryAdded;
             }
             
-            Selection.selectionChanged -= OnSelectionChanged;
+            // Selection.selectionChanged -= OnSelectionChanged;
 
             styleSheet = null;
             historyElementViewTree = null;
@@ -83,6 +83,10 @@ namespace Gemserk
             {
                 ReloadRootAndRemoveUnloadedAndDuplicated();
             };
+            FavoritesAsset.instance.OnFavoritesUpdatedWithNoScroll += delegate
+            {
+                ReloadRootAndRemoveUnloadedAndDuplicated(false, true);
+            };
             
             var root = rootVisualElement;
             root.styleSheets.Add(styleSheet);
@@ -91,7 +95,7 @@ namespace Gemserk
             
             ReloadRootAndRemoveUnloadedAndDuplicated();
             
-            Selection.selectionChanged += OnSelectionChanged;
+            // Selection.selectionChanged += OnSelectionChanged;
         }
 
         private void RegenerateUI()
@@ -153,7 +157,7 @@ namespace Gemserk
             searchToolbar.RegisterValueChangedCallback(evt =>
             {
                 searchText = evt.newValue;
-                ReloadRoot(false);
+                ReloadRoot(false, true);
             });
 
             return searchToolbar;
@@ -252,27 +256,26 @@ namespace Gemserk
                     if (entry == null)
                         return;
                     selectionHistory.Remove(entry);
-                    FavoritesAsset.instance.InvokeUpdate();
+                    FavoritesAsset.instance.InvokeUpdateWithNoScroll();
                 });
             }
 
             return selectionElementRoot;
         }
 
-        private void OnSelectionChanged()
-        {
-            if (SelectionHistoryWindowUtils.RecordInTheBackground)
-            {
-                return;
-            }
+        // private void OnSelectionChanged()
+        // {
+        //     if (SelectionHistoryWindowUtils.RecordInTheBackground)
+        //     {
+        //         return;
+        //     }
 
-            SelectionHistoryWindowUtils.Record();
-        }
+        //     SelectionHistoryWindowUtils.Record();
+        // }
 
         private void OnHistoryEntryAdded(SelectionHistory selectionHistory)
         {
-            ReloadRootAndRemoveUnloadedAndDuplicated();
-            ScrollToLatestSelection();
+            ReloadRootAndRemoveUnloadedAndDuplicated(true);
         }
 
         private void OnSceneOpened(Scene scene, OpenSceneMode mode)
@@ -280,7 +283,7 @@ namespace Gemserk
             ReloadRootAndRemoveUnloadedAndDuplicated();
         }
 
-        public void ReloadRootAndRemoveUnloadedAndDuplicated()
+        public void ReloadRootAndRemoveUnloadedAndDuplicated(bool needRegenerateUI = false, bool withoutScroll = false)
         {
             if (SelectionHistoryWindowUtils.AutomaticRemoveDestroyed)
                 selectionHistory.RemoveEntries(SelectionHistory.Entry.State.ReferenceDestroyed);
@@ -291,10 +294,10 @@ namespace Gemserk
             if (!SelectionHistoryWindowUtils.AllowDuplicatedEntries)
                 selectionHistory.RemoveDuplicated();
             
-            ReloadRoot();
+            ReloadRoot(needRegenerateUI, withoutScroll);
         }
 
-        private void ReloadRoot(bool needRegenerateUI = true)
+        private void ReloadRoot(bool needRegenerateUI = false, bool withoutScroll = false)
         {
             //if (visualElements.Count != selectionHistory.historySize)
             //{
@@ -481,10 +484,19 @@ namespace Gemserk
             {
                 mainScrollElement.contentContainer.style.flexDirection = SelectionHistoryWindowUtils.OrderLastSelectedFirst ? FlexDirection.ColumnReverse : FlexDirection.Column;
             }
+            if(!withoutScroll)
+                ScrollToSelection();
         }
 
-        public void ScrollToLatestSelection()
+        public void ScrollToSelection()
         {
+            var selectReference = selectionHistory.GetSelection();
+            if (selectReference == null){
+                return;
+            }
+            if(!SelectionHistoryUtils.isOther(selectReference)){
+                return;
+            } 
             var index = selectionHistory.GetSelectedIndex();
 
             if (mainScrollElement != null)
@@ -524,7 +536,7 @@ namespace Gemserk
             menu.AddItem(new GUIContent(name, tooltip), false, delegate
             {
                 ToggleBoolEditorPref(preference, defaultValue);
-                ReloadRootAndRemoveUnloadedAndDuplicated();
+                ReloadRootAndRemoveUnloadedAndDuplicated(false, true);
             });
         }
 
