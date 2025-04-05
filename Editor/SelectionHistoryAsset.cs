@@ -13,6 +13,7 @@ namespace Gemserk
         {
             if (selectionHistory != null)
             {
+                selectionHistory.OnNewPrefabAdded += OnNewEntryAdded;
                 selectionHistory.OnNewEntryAdded += OnNewEntryAdded;
             }
         }
@@ -21,6 +22,7 @@ namespace Gemserk
         {
             if (selectionHistory != null)
             {
+                selectionHistory.OnNewPrefabAdded -= OnNewEntryAdded;
                 selectionHistory.OnNewEntryAdded -= OnNewEntryAdded;
             }
         }

@@ -18,7 +18,7 @@ namespace Gemserk
                 return null;
             }
 
-            return selectionHistory.History[index];
+            return selectionHistory.History[index]; 
         }
 
         public static bool IsSceneAsset(this SelectionHistory.Entry entry)
@@ -80,10 +80,10 @@ namespace Gemserk
             
             if (selectionHistory != null)
             {
-                selectionHistory.OnNewEntryAdded -= OnHistoryEntryAdded;
+                selectionHistory.OnNewPrefabAdded -= OnHistoryEntryAdded;
             }
             
-            // Selection.selectionChanged -= OnSelectionChanged;
+            Selection.selectionChanged -= OnSelectionChanged;
 
             styleSheet = null;
             historyElementViewTree = null;
@@ -99,12 +99,16 @@ namespace Gemserk
             
             if (selectionHistory != null)
             {
-                selectionHistory.OnNewEntryAdded += OnHistoryEntryAdded;
+                selectionHistory.OnNewPrefabAdded += OnHistoryEntryAdded;
             }
 
             FavoritesAsset.instance.OnFavoritesUpdated += delegate
             {
                 ReloadRootAndRemoveUnloadedAndDuplicated();
+            };
+            FavoritesAsset.instance.OnFavoritesUpdatedWithNoScroll += delegate
+            {
+                ReloadRootAndRemoveUnloadedAndDuplicated(false, true);
             };
             
             var root = rootVisualElement;
@@ -114,7 +118,7 @@ namespace Gemserk
             
             ReloadRootAndRemoveUnloadedAndDuplicated();
             
-            // Selection.selectionChanged += OnSelectionChanged;
+            Selection.selectionChanged += OnSelectionChanged;
         }
 
         private void RegenerateUI()
@@ -176,7 +180,7 @@ namespace Gemserk
             searchToolbar.RegisterValueChangedCallback(evt =>
             {
                 searchText = evt.newValue;
-                ReloadRoot(false);
+                ReloadRoot(false, true);
             });
 
             return searchToolbar;
@@ -239,7 +243,7 @@ namespace Gemserk
                     var entry = selectionHistory.GetEntry(historyIndex);
                     if (entry == null)
                         return;
-                        
+
                     if (FavoritesAsset.instance.IsFavorite(entry.Reference))
                     {
                         FavoritesAsset.instance.RemoveFavorite(entry.Reference);
@@ -264,41 +268,26 @@ namespace Gemserk
                     if (entry == null)
                         return;
                     selectionHistory.Remove(entry);
-                    FavoritesAsset.instance.InvokeUpdate();
+                    FavoritesAsset.instance.InvokeUpdateWithNoScroll();
                 });
             }
 
             return selectionElementRoot;
         }
 
-        // private void OnSelectionChanged()
-        // {
-        //     if (SelectionHistoryWindowUtils.RecordInTheBackground)
-        //     {
-        //         return;
-        //     }
+        private void OnSelectionChanged()
+        {
+            if (SelectionHistoryWindowUtils.RecordInTheBackground)
+            {
+                return;
+            }
 
-        //     if (Selection.activeObject != null)
-		// 	{
-        //         var needRecord = false;
-        //         if(SelectionHistoryWindowUtils.OnlyRecordPrefabAndSprite)
-        //         {
-        //             needRecord = SelectionHistoryUtils.isSprite(Selection.activeObject);
-        //         } else {
-        //             needRecord = SelectionHistoryUtils.isOther(Selection.activeObject);
-        //         }
-        //         if(needRecord)
-        //         {
-        //             SelectionHistoryWindowUtils.RecordSelectionChange(); 
-        //         }
-        //         FavoritesAsset.instance.InvokeUpdate();
-		// 	}
-        // }
+            SelectionHistoryWindowUtils.Record();
+        }
 
         private void OnHistoryEntryAdded(SelectionHistory selectionHistory)
         {
-            ReloadRootAndRemoveUnloadedAndDuplicated();
-            ScrollToLatestSelection();
+            ReloadRootAndRemoveUnloadedAndDuplicated(true);
         }
 
         private void OnSceneOpened(Scene scene, OpenSceneMode mode)
@@ -306,7 +295,7 @@ namespace Gemserk
             ReloadRootAndRemoveUnloadedAndDuplicated();
         }
 
-        public void ReloadRootAndRemoveUnloadedAndDuplicated()
+        public void ReloadRootAndRemoveUnloadedAndDuplicated(bool needRegenerateUI = false, bool withoutScroll = false)
         {
             if (SelectionHistoryWindowUtils.AutomaticRemoveDestroyed)
                 selectionHistory.RemoveEntries(SelectionHistory.Entry.State.ReferenceDestroyed);
@@ -317,10 +306,10 @@ namespace Gemserk
             if (!SelectionHistoryWindowUtils.AllowDuplicatedEntries)
                 selectionHistory.RemoveDuplicated();
             
-            ReloadRoot();
+            ReloadRoot(needRegenerateUI, withoutScroll);
         }
 
-        private void ReloadRoot(bool needRegenerateUI = true)
+        private void ReloadRoot(bool needRegenerateUI = false, bool withoutScroll = false)
         {
             //if (visualElements.Count != selectionHistory.historySize)
             //{
@@ -497,10 +486,19 @@ namespace Gemserk
             {
                 mainScrollElement.contentContainer.style.flexDirection = SelectionHistoryWindowUtils.OrderLastSelectedFirst ? FlexDirection.ColumnReverse : FlexDirection.Column;
             }
+            if(!withoutScroll)
+                ScrollToSelection();
         }
 
-        public void ScrollToLatestSelection()
+        public void ScrollToSelection()
         {
+            var selectReference = selectionHistory.GetSelection();
+            if (selectReference == null){
+                return;
+            }
+            if(!SelectionHistoryUtils.isPrefab(selectReference)){
+                return;
+            } 
             var index = selectionHistory.GetSelectedIndex();
 
             if (mainScrollElement != null)
@@ -567,7 +565,7 @@ namespace Gemserk
             menu.AddItem(new GUIContent(name, tooltip), false, delegate
             {
                 ToggleBoolEditorPref(preference, defaultValue);
-                ReloadRootAndRemoveUnloadedAndDuplicated();
+                ReloadRootAndRemoveUnloadedAndDuplicated(false, true);
             });
         }
 

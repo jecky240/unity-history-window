@@ -85,6 +85,7 @@ namespace Gemserk
             if (_favorites != null)
             {
                 _favorites.OnFavoritesUpdated -= OnFavoritesUpdated;
+                _favorites.OnFavoritesUpdatedWithNoScroll -= OnFavoritesUpdated;
             }
             
             styleSheet = null;
@@ -97,6 +98,7 @@ namespace Gemserk
             
             _favorites = FavoritesAsset.instance;
             _favorites.OnFavoritesUpdated += OnFavoritesUpdated;
+            _favorites.OnFavoritesUpdatedWithNoScroll += OnFavoritesUpdated;
             
             var root = rootVisualElement;
             root.styleSheets.Add(styleSheet);

@@ -33,7 +33,7 @@ namespace Gemserk {
                         autoremoveUnloaded = EditorPrefs.GetBool(SelectionHistoryWindowUtils.HistoryAutomaticRemoveUnloadedPrefKey, true);
                         autoRemoveDuplicated = EditorPrefs.GetBool(SelectionHistoryWindowUtils.HistoryAllowDuplicatedEntriesPrefKey, false);
                         onlyRecordPrefabAndSprite = EditorPrefs.GetBool(SelectionHistoryWindowUtils.HistoryOnlyRecordPrefabAndSpritePrefKey, true);
-                        orderLastSelectedFirst = EditorPrefs.GetBool(SelectionHistoryWindowUtils.OrderLastSelectedFirstKey, false);
+                        orderLastSelectedFirst = EditorPrefs.GetBool(SelectionHistoryWindowUtils.OrderLastSelectedFirstKey, true);
                         backgroundRecord = EditorPrefs.GetBool(SelectionHistoryWindowUtils.BackgroundRecordKey, true);
                         prefsLoaded = true;
                     }
@@ -48,8 +48,8 @@ namespace Gemserk {
                     // autoremoveUnloaded = EditorGUILayout.Toggle("自动移除已卸载的元素", autoremoveUnloaded);
                     // autoRemoveDuplicated = EditorGUILayout.Toggle("允许重复条目", autoRemoveDuplicated);
                     onlyRecordPrefabAndSprite = EditorGUILayout.Toggle("只记录预制体和精灵", onlyRecordPrefabAndSprite);
-                    orderLastSelectedFirst = EditorGUILayout.Toggle("从列表头部塞入记录", orderLastSelectedFirst);
-                    backgroundRecord = EditorGUILayout.Toggle("面板关闭时仍能记录", backgroundRecord);
+                    // orderLastSelectedFirst = EditorGUILayout.Toggle("从列表头部塞入记录", orderLastSelectedFirst);
+                    // backgroundRecord = EditorGUILayout.Toggle("面板关闭时仍能记录", backgroundRecord);
 
                     if (GUI.changed) {
                         EditorPrefs.SetBool(SelectionHistoryWindowUtils.HistoryAutomaticRemoveDestroyedPrefKey, autoremoveDestroyed);

@@ -60,9 +60,9 @@ namespace Gemserk
                 }
                 if(needRecord)
                 {
-                    SelectionHistoryWindowUtils.RecordSelectionChange();  
+                    SelectionHistoryWindowUtils.RecordSelectionChange(); 
                 }
-                FavoritesAsset.instance.InvokeUpdate();
+				FavoritesAsset.instance.InvokeUpdate();
 			}
 		}
 
@@ -74,7 +74,7 @@ namespace Gemserk
 			{
 				if(SelectionHistoryUtils.isPrefab(Selection.activeObject))
 				{
-					RecordSelectionChange();
+					SelectionHistoryWindowUtils.RecordSelectionChange();
 				}
 			}
 			return false;
@@ -167,7 +167,7 @@ namespace Gemserk
 			EditorPrefs.GetBool(HistoryShowOpenButtonPrefKey2, true);
 		
 		public static bool OrderLastSelectedFirst =>
-			EditorPrefs.GetBool(OrderLastSelectedFirstKey, false);
+			EditorPrefs.GetBool(OrderLastSelectedFirstKey, true);
 		
 		public static bool RecordInTheBackground =>
 			EditorPrefs.GetBool(BackgroundRecordKey, true);
