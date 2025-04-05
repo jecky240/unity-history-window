@@ -89,11 +89,12 @@ namespace Gemserk
             };
             
             var root = rootVisualElement;
-            root.styleSheets.Add(styleSheet);
-
-            RegenerateUI();
-            
-            ReloadRootAndRemoveUnloadedAndDuplicated();
+            if(styleSheet != null)
+            {
+                root.styleSheets.Add(styleSheet);
+                RegenerateUI();
+                ReloadRootAndRemoveUnloadedAndDuplicated();
+            }
             
             // Selection.selectionChanged += OnSelectionChanged;
         }

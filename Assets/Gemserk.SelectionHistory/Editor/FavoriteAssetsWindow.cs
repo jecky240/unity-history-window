@@ -101,9 +101,12 @@ namespace Gemserk
             _favorites.OnFavoritesUpdatedWithNoScroll += OnFavoritesUpdated;
             
             var root = rootVisualElement;
-            root.styleSheets.Add(styleSheet);
-
-            root.Add(CreateSearchToolbar());
+            if(styleSheet != null)
+            {
+                root.styleSheets.Add(styleSheet);
+                root.Add(CreateSearchToolbar());
+                ReloadRoot();
+            }
 
             root.RegisterCallback<DragPerformEvent>(evt =>
             {
@@ -115,8 +118,6 @@ namespace Gemserk
             {
                 DragAndDrop.visualMode = DragAndDropVisualMode.Move;
             });
-            
-            ReloadRoot();
         }
 
         private void OnFavoritesUpdated(FavoritesAsset favorites)
