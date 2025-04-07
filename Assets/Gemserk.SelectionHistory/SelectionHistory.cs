@@ -241,6 +241,7 @@ namespace Gemserk
             if(currentReference != null){
                 currentSelectionIndex = _history.FindIndex(e => currentReference.Equals(e.Reference));
             }
+            SelectionHistoryAsset.instance.ForceSave();
         }
 
         public void ClearOther()
@@ -256,11 +257,13 @@ namespace Gemserk
             if(currentReference != null){
                 currentSelectionIndex = _history.FindIndex(e => currentReference.Equals(e.Reference));
             }
+            SelectionHistoryAsset.instance.ForceSave();
         }
 
         public void Clear()
         {
             _history.Clear();
+            SelectionHistoryAsset.instance.ForceSave();
         }
 
         public int GetHistoryCount()
