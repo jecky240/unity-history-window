@@ -143,7 +143,8 @@ namespace Gemserk
             var clearButton = new Button(delegate
             {
                 selectionHistory.ClearPrefab();
-                FavoritesAsset.instance.InvokeUpdate(); 
+                FavoritesAsset.instance.InvokeUpdate();
+                SelectionHistoryAsset.instance.ForceSave();
             }) {text = "清空预制体历史记录"};
             
             root.Add(clearButton);
@@ -551,11 +552,13 @@ namespace Gemserk
             {
                 selectionHistory.Clear();
                 FavoritesAsset.instance.InvokeUpdate(); 
+                SelectionHistoryAsset.instance.ForceSave();
             });
             menu.AddItem(new GUIContent("一键清除 [历史&&收藏夹]"), false, delegate 
             {
                 selectionHistory.Clear();
                 FavoritesAsset.instance.RemoveAll();
+                SelectionHistoryAsset.instance.ForceSave();
             });
         }
 

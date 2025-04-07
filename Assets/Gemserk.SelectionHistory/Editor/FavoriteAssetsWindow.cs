@@ -306,7 +306,8 @@ namespace Gemserk
                 if(selectionHistory != null){
                     selectionHistory.Clear();
                 }
-                FavoritesAsset.instance.InvokeUpdate(); 
+                FavoritesAsset.instance.InvokeUpdate();
+                SelectionHistoryAsset.instance.ForceSave();
             });
             menu.AddItem(new GUIContent("一键清除 [历史&&收藏夹]"), false, delegate 
             {
@@ -315,6 +316,7 @@ namespace Gemserk
                     selectionHistory.Clear();
                 }
                 FavoritesAsset.instance.RemoveAll();
+                SelectionHistoryAsset.instance.ForceSave();
             });
         }
 
