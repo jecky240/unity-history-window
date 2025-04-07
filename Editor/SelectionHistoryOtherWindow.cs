@@ -121,6 +121,7 @@ namespace Gemserk
             {
                 selectionHistory.ClearOther();
                 FavoritesAsset.instance.InvokeUpdate();
+                SelectionHistoryAsset.instance.ForceSave();
             }) {text = "清空资源历史记录"};
             
             root.Add(clearButton);
@@ -521,12 +522,14 @@ namespace Gemserk
             menu.AddItem(new GUIContent("一键清除所有历史"), false, delegate
             {
                 selectionHistory.Clear();
-                FavoritesAsset.instance.InvokeUpdate(); 
+                FavoritesAsset.instance.InvokeUpdate();
+                SelectionHistoryAsset.instance.ForceSave();
             });
             menu.AddItem(new GUIContent("一键清除 [历史&&收藏夹]"), false, delegate 
             {
                 selectionHistory.Clear();
                 FavoritesAsset.instance.RemoveAll();
+                SelectionHistoryAsset.instance.ForceSave();
             });
         }
 
