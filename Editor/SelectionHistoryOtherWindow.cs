@@ -507,7 +507,15 @@ namespace Gemserk
 
                 if (index >= 0 && index <= visualElements.Count - 1)
                 {
-                    mainScrollElement.ScrollTo(visualElements[index]);
+                    var value = visualElements[index].contentRect.width;
+                    if(double.IsNaN(value)){
+                        visualElements[index].RegisterCallback<GeometryChangedEvent>(evt =>
+                        {
+                            mainScrollElement.ScrollTo(visualElements[index]);
+                        });
+                    } else {
+                        mainScrollElement.ScrollTo(visualElements[index]);
+                    }
                 }
             }
         }
