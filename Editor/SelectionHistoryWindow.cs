@@ -271,6 +271,7 @@ namespace Gemserk
                         return;
                     selectionHistory.Remove(entry);
                     FavoritesAsset.instance.InvokeUpdateWithNoScroll();
+                    SelectionHistoryAsset.instance.ForceSave();
                 });
             }
 

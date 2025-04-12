@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Gemserk
 {
-    [FilePath("Gemserk/Gemserk.SelectionHistory.asset", FilePathAttribute.Location.ProjectFolder)]
+    [FilePath("Logs/SelectionHistoryRecord.asset", FilePathAttribute.Location.ProjectFolder)]
     public class SelectionHistoryAsset : ScriptableSingleton<SelectionHistoryAsset>
     {
         [SerializeField]

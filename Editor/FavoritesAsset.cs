@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace Gemserk
 {
-    [FilePath("Gemserk/Gemserk.Favorites.asset", FilePathAttribute.Location.ProjectFolder)]
+    [FilePath("Logs/FavoritesRecord.asset", FilePathAttribute.Location.ProjectFolder)]
     public class FavoritesAsset : ScriptableSingleton<FavoritesAsset>
     {
         [Serializable]

@@ -8,27 +8,27 @@ namespace Gemserk
 	[InitializeOnLoad]
 	public static class SelectionHistoryWindowUtils {
 
-		public static readonly string HistoryAutomaticRemoveDestroyedPrefKey = "Gemserk.SelectionHistory.AutomaticRemoveDeleted";
-		public static readonly string HistoryAutomaticRemoveUnloadedPrefKey = "Gemserk.SelectionHistory.AutomaticRemoveUnloaded";
+		public static readonly string HistoryAutomaticRemoveDestroyedPrefKey = "SelectionHistoryRecord.AutomaticRemoveDeleted";
+		public static readonly string HistoryAutomaticRemoveUnloadedPrefKey = "SelectionHistoryRecord.AutomaticRemoveUnloaded";
 		
-		public static readonly string HistoryAllowDuplicatedEntriesPrefKey = "Gemserk.SelectionHistory.AllowDuplicatedEntries";
-	    public static readonly string HistoryShowHierarchyObjectsPrefKey = "Gemserk.SelectionHistory.ShowHierarchyObjects";
+		public static readonly string HistoryAllowDuplicatedEntriesPrefKey = "SelectionHistoryRecord.AllowDuplicatedEntries";
+	    public static readonly string HistoryShowHierarchyObjectsPrefKey = "SelectionHistoryRecord.ShowHierarchyObjects";
 
-		public static readonly string HistoryOnlyRecordPrefabAndSpritePrefKey = "Gemserk.SelectionHistory.OnlyRecordPrefabAndSprite";
+		public static readonly string HistoryOnlyRecordPrefabAndSpritePrefKey = "SelectionHistoryRecord.OnlyRecordPrefabAndSprite";
 
-	    public static readonly string HistoryShowFavoriteButtonPrefKey = "Gemserk.SelectionHistory.ShowFavoritesPinButton";
-		public static readonly string HistoryShowPingButtonPrefKey = "Gemserk.SelectionHistory.ShowPingButton";
-		public static readonly string HistoryShowOpenButtonPrefKey = "Gemserk.SelectionHistory.ShowOpenButton";
+	    public static readonly string HistoryShowFavoriteButtonPrefKey = "SelectionHistoryRecord.ShowFavoritesPinButton";
+		public static readonly string HistoryShowPingButtonPrefKey = "SelectionHistoryRecord.ShowPingButton";
+		public static readonly string HistoryShowOpenButtonPrefKey = "SelectionHistoryRecord.ShowOpenButton";
 
-		public static readonly string HistoryShowFavoriteButtonPrefKey2 = "Gemserk.SelectionHistory.ShowFavoritesPinButton2";
-		public static readonly string HistoryShowPingButtonPrefKey2 = "Gemserk.SelectionHistory.ShowPingButton2";
-		public static readonly string HistoryShowOpenButtonPrefKey2 = "Gemserk.SelectionHistory.ShowOpenButton2";
+		public static readonly string HistoryShowFavoriteButtonPrefKey2 = "SelectionHistoryRecord.ShowFavoritesPinButton2";
+		public static readonly string HistoryShowPingButtonPrefKey2 = "SelectionHistoryRecord.ShowPingButton2";
+		public static readonly string HistoryShowOpenButtonPrefKey2 = "SelectionHistoryRecord.ShowOpenButton2";
 
-	    public static readonly string ShowUnloadedObjectsKey = "Gemserk.SelectionHistory.ShowUnloadedObjects";
-	    public static readonly string ShowDestroyedObjectsKey = "Gemserk.SelectionHistory.ShowDestroyedObjects";
+	    public static readonly string ShowUnloadedObjectsKey = "SelectionHistoryRecord.ShowUnloadedObjects";
+	    public static readonly string ShowDestroyedObjectsKey = "SelectionHistoryRecord.ShowDestroyedObjects";
 	    
-	    public static readonly string OrderLastSelectedFirstKey = "Gemserk.SelectionHistory.OrderLastSelectedFirst";
-	    public static readonly string BackgroundRecordKey = "Gemserk.SelectionHistory.BackgroundRecord";
+	    public static readonly string OrderLastSelectedFirstKey = "SelectionHistoryRecord.OrderLastSelectedFirst";
+	    public static readonly string BackgroundRecordKey = "SelectionHistoryRecord.BackgroundRecord";
 
 	    public const float distanceToConsiderDrag = 10.0f;
 	    
