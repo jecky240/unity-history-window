@@ -167,7 +167,7 @@ namespace Gemserk
 			EditorPrefs.GetBool(HistoryShowOpenButtonPrefKey2, true);
 		
 		public static bool OrderLastSelectedFirst =>
-			EditorPrefs.GetBool(OrderLastSelectedFirstKey, true);
+			EditorPrefs.GetBool(OrderLastSelectedFirstKey, false);
 		
 		public static bool RecordInTheBackground =>
 			EditorPrefs.GetBool(BackgroundRecordKey, true);
