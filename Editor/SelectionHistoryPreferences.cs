@@ -47,7 +47,7 @@ namespace Gemserk {
                     // autoremoveDestroyed = EditorGUILayout.Toggle("自动移除已销毁的元素", autoremoveDestroyed);
                     // autoremoveUnloaded = EditorGUILayout.Toggle("自动移除已卸载的元素", autoremoveUnloaded);
                     // autoRemoveDuplicated = EditorGUILayout.Toggle("允许重复条目", autoRemoveDuplicated);
-                    onlyRecordPrefabAndSprite = EditorGUILayout.Toggle("只记录预制体和精灵", onlyRecordPrefabAndSprite);
+                    onlyRecordPrefabAndSprite = EditorGUILayout.Toggle("   只记录预制体和精灵", onlyRecordPrefabAndSprite);
                     // orderLastSelectedFirst = EditorGUILayout.Toggle("从列表头部塞入记录", orderLastSelectedFirst);
                     // backgroundRecord = EditorGUILayout.Toggle("面板关闭时仍能记录", backgroundRecord);
 
