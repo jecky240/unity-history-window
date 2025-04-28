@@ -294,7 +294,11 @@ namespace Gemserk
         }
 
         public void AddItemsToMenu(GenericMenu menu)
-        {		             
+        {		
+            menu.AddItem(new GUIContent("打开首选项"), false, delegate
+            {
+                SettingsService.OpenUserPreferences("Selection History");
+            });             
             AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowPingButtonPrefKey2, " [定位] 按钮", 
                 "Toggle to show/hide ping button.", true);
 

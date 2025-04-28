@@ -523,6 +523,10 @@ namespace Gemserk
 
         public void AddItemsToMenu(GenericMenu menu)
         {      
+            menu.AddItem(new GUIContent("打开首选项"), false, delegate
+            {
+                SettingsService.OpenUserPreferences("Selection History");
+            });
             AddMenuItemForPreference(menu, SelectionHistoryWindowUtils.HistoryShowFavoriteButtonPrefKey2, " [收藏&&打开] 按钮", 
                 "Toggle to show/hide favorite & open button.", true);
 
