@@ -17,6 +17,7 @@ namespace Gemserk
         private bool isPressed;
 
         private readonly Object assetReference;
+        private EditorWindow editWindow;
      
         public FavoriteElementDragManipulator(Object assetReference)
         {
@@ -25,6 +26,11 @@ namespace Gemserk
             mouseMoveHandler = OnMouseMove;
             mouseUpHandler = OnMouseUp;
             mouseClickHandler = OnClickEvent;
+        }
+
+        public void SetEditWindow(EditorWindow w)
+        {
+            editWindow = w;
         }
 
         private void OnMouseDown(MouseDownEvent evt)
@@ -66,8 +72,16 @@ namespace Gemserk
             
             if (evt.button == 1)
             {
+                var name = assetReference.name;
+                GUIUtility.systemCopyBuffer = name;
+                ShowNotification("文件名已复制", 0.5);
                 // EditorGUIUtility.PingObject(assetReference);
             } 
+        }
+
+        private void ShowNotification(string message, double duration)
+        {
+            editWindow.ShowNotification(new GUIContent(message), duration);
         }
         
         private void OnClickEvent(ClickEvent evt)

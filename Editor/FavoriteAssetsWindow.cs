@@ -215,7 +215,9 @@ namespace Gemserk
 
                 if (dragArea != null)
                 {
-                    dragArea.AddManipulator(new FavoriteElementDragManipulator(assetReference));
+                    var manipulator = new FavoriteElementDragManipulator(assetReference);
+                    manipulator.SetEditWindow(this);
+                    dragArea.AddManipulator(manipulator);
                 }
                 
                 var icon = elementTree.Q<Image>("Icon");

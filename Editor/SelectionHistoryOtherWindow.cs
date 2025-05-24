@@ -194,7 +194,9 @@ namespace Gemserk
             var dragArea = selectionElementRoot.Q<VisualElement>("DragArea");
             if (dragArea != null)
             {
-                dragArea.AddManipulator(new HistoryElementDragManipulator(selectionHistory, historyIndex));
+                var manipulator = new HistoryElementDragManipulator(selectionHistory, historyIndex);
+                manipulator.SetEditWindow(this);
+                dragArea.AddManipulator(manipulator);
             }
             
             var openPrefabIcon = selectionElementRoot.Q<Image>("OpenPrefabIcon");
