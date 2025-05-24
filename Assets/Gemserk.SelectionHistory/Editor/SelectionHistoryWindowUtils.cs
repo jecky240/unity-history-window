@@ -30,6 +30,8 @@ namespace Gemserk
 	    public static readonly string OrderLastSelectedFirstKey = "SelectionHistoryRecord.OrderLastSelectedFirst";
 	    public static readonly string BackgroundRecordKey = "SelectionHistoryRecord.BackgroundRecord";
 
+		public static readonly string ExtraRecordKey = "SelectionHistoryRecord.ExtraRecordKey";
+
 	    public const float distanceToConsiderDrag = 10.0f;
 	    
 	    private static readonly bool debugEnabled = false;
@@ -55,6 +57,9 @@ namespace Gemserk
                 if(SelectionHistoryWindowUtils.OnlyRecordPrefabAndSprite)
                 {
                     needRecord = SelectionHistoryUtils.isSprite(Selection.activeObject);
+					if(!needRecord){
+						needRecord = SelectionHistoryUtils.isExtra(Selection.activeObject, SelectionHistoryWindowUtils.ExtraRecord);
+					}
                 } else {
                     needRecord = SelectionHistoryUtils.isOther(Selection.activeObject);
                 }
@@ -171,7 +176,9 @@ namespace Gemserk
 		
 		public static bool RecordInTheBackground =>
 			EditorPrefs.GetBool(BackgroundRecordKey, true);
-	
+
+		public static string ExtraRecord =>
+			EditorPrefs.GetString(ExtraRecordKey, "");
 
 	    public static void PingEntry(SelectionHistory.Entry e)
 	    {

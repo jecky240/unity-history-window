@@ -51,6 +51,21 @@ namespace Gemserk
 			var path = AssetDatabase.GetAssetPath(obj);
 			return path.EndsWith(".png") || path.EndsWith(".jpg") || path.EndsWith(".jpeg");
 		}
+
+        public static bool isExtra(Object obj, string extraRecord)
+        {
+            if (obj == null || extraRecord == "")
+				return false;
+
+			var path = AssetDatabase.GetAssetPath(obj);
+            var extras = extraRecord.Split(",");
+            foreach(var e in extras){
+                if(path.EndsWith("." + e)){
+                    return true;
+                }
+            }
+            return false;
+        }
     }
     
     [Serializable]

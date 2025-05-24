@@ -19,6 +19,8 @@ namespace Gemserk {
 
         private static bool backgroundRecord;
 
+        private static string extraRecord;
+
         [SettingsProvider]
         public static SettingsProvider CreateSelectionHistorySettingsProvider() {
             var provider = new SettingsProvider("Selection History", SettingsScope.User) {
@@ -35,6 +37,7 @@ namespace Gemserk {
                         onlyRecordPrefabAndSprite = EditorPrefs.GetBool(SelectionHistoryWindowUtils.HistoryOnlyRecordPrefabAndSpritePrefKey, true);
                         orderLastSelectedFirst = EditorPrefs.GetBool(SelectionHistoryWindowUtils.OrderLastSelectedFirstKey, false);
                         backgroundRecord = EditorPrefs.GetBool(SelectionHistoryWindowUtils.BackgroundRecordKey, true);
+                        extraRecord = EditorPrefs.GetString(SelectionHistoryWindowUtils.ExtraRecordKey, "");
                         prefsLoaded = true;
                     }
                     
@@ -47,9 +50,11 @@ namespace Gemserk {
                     // autoremoveDestroyed = EditorGUILayout.Toggle("自动移除已销毁的元素", autoremoveDestroyed);
                     // autoremoveUnloaded = EditorGUILayout.Toggle("自动移除已卸载的元素", autoremoveUnloaded);
                     // autoRemoveDuplicated = EditorGUILayout.Toggle("允许重复条目", autoRemoveDuplicated);
-                    onlyRecordPrefabAndSprite = EditorGUILayout.Toggle("   只记录预制体和精灵", onlyRecordPrefabAndSprite);
+                    onlyRecordPrefabAndSprite = EditorGUILayout.Toggle("    只记录预制体/精灵/额外", onlyRecordPrefabAndSprite);
                     // orderLastSelectedFirst = EditorGUILayout.Toggle("从列表头部塞入记录", orderLastSelectedFirst);
                     // backgroundRecord = EditorGUILayout.Toggle("面板关闭时仍能记录", backgroundRecord);
+
+                    extraRecord = EditorGUILayout.TextField("    额外记录后缀(逗号分隔)", extraRecord);
 
                     if (GUI.changed) {
                         EditorPrefs.SetBool(SelectionHistoryWindowUtils.HistoryAutomaticRemoveDestroyedPrefKey, autoremoveDestroyed);
@@ -58,6 +63,7 @@ namespace Gemserk {
                         EditorPrefs.SetBool(SelectionHistoryWindowUtils.HistoryOnlyRecordPrefabAndSpritePrefKey, onlyRecordPrefabAndSprite);
                         EditorPrefs.SetBool(SelectionHistoryWindowUtils.OrderLastSelectedFirstKey, orderLastSelectedFirst);
                         EditorPrefs.SetBool(SelectionHistoryWindowUtils.BackgroundRecordKey, backgroundRecord);
+                        EditorPrefs.SetString(SelectionHistoryWindowUtils.ExtraRecordKey, extraRecord);
 
                         // var window = EditorWindow.GetWindow<SelectionHistoryWindow>();
                         // if (window != null)

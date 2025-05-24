@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -22,6 +23,7 @@ namespace Gemserk
 
         private readonly SelectionHistory selectionHistory;
         private readonly int historyIndex;
+        private EditorWindow editWindow;
      
         public HistoryElementDragManipulator(SelectionHistory selectionHistory, int historyIndex)
         {
@@ -32,6 +34,11 @@ namespace Gemserk
             mouseMoveHandler = OnMouseMove;
             mouseUpHandler = OnMouseUp;
             mouseClickHandler = OnClickEvent;
+        }
+
+        public void SetEditWindow(EditorWindow w)
+        {
+            editWindow = w;
         }
 
         private void OnMouseDown(MouseDownEvent evt)
@@ -72,9 +79,17 @@ namespace Gemserk
             
             if (evt.button == 1)
             {
+                var name = entry.GetName(true);
+                GUIUtility.systemCopyBuffer = name;
+                ShowNotification("文件名已复制", 0.5);
                 // Just ping the object
                 // SelectionHistoryWindowUtils.PingEntry(entry);
             } 
+        }
+
+        private void ShowNotification(string message, double duration)
+        {
+            editWindow.ShowNotification(new GUIContent(message), duration);
         }
         
         private void OnClickEvent(ClickEvent evt)
